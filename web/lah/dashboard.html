@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LAHI 4.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .app.dash-app { grid-template-columns: 1fr; }
+
+  .dash-main {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    overflow-y: auto;
+    background: var(--bg);
+    padding: 2.5rem 2rem;
+  }
+  .dash-main::-webkit-scrollbar { width: 4px; }
+  .dash-main::-webkit-scrollbar-track { background: transparent; }
+  .dash-main::-webkit-scrollbar-thumb { background: var(--fog); border-radius: 2px; }
+
+  /* ── Sección ── */
+  .dash-section { margin-bottom: 3rem; }
+
+  .dash-section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--fog);
+  }
+  .dash-section-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.45rem;
+    color: var(--soil);
+    font-weight: 300;
+  }
+  .dash-section-title span {
+    font-size: 1rem;
+    color: var(--sand);
+  }
+  .dash-updated {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--soil);
+    letter-spacing: 0.04em;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  /* ── Stat panels ── */
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+  .db-stat {
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.6rem;
+    min-height: 110px;
+    transition: background 0.5s;
+    background: var(--fog);
+  }
+  .db-stat[data-status="ok"]    { background: #3fa83c; }
+  .db-stat[data-status="warn"]  { background: #c49a0a; }
+  .db-stat[data-status="alert"] { background: #c0392b; }
+
+  .db-stat-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--sand);
+  }
+  .db-stat[data-status="ok"] .db-stat-label,
+  .db-stat[data-status="warn"] .db-stat-label,
+  .db-stat[data-status="alert"] .db-stat-label { color: rgba(255,255,255,0.75); }
+
+  .db-stat-body { display: flex; align-items: baseline; gap: 0.3rem; line-height: 1; }
+  .db-stat-num { font-family: var(--serif); font-size: 2.5rem; font-weight: 300; color: var(--bark); }
+  .db-stat[data-status="ok"] .db-stat-num,
+  .db-stat[data-status="warn"] .db-stat-num,
+  .db-stat[data-status="alert"] .db-stat-num { color: #fff; }
+  .db-stat-unit { font-family: var(--mono); font-size: 0.82rem; color: var(--sand); }
+  .db-stat[data-status="ok"] .db-stat-unit,
+  .db-stat[data-status="warn"] .db-stat-unit,
+  .db-stat[data-status="alert"] .db-stat-unit { color: rgba(255,255,255,0.8); }
+
+  /* ── Time filter ── */
+  .tf-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .tf-label {
+    font-family: var(--mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sand);
+    margin-right: 0.25rem;
+  }
+  .tf-btn {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--fog);
+    background: var(--panel);
+    color: var(--sand);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .tf-btn:hover { border-color: var(--moss); color: var(--moss); }
+  .tf-btn.active { background: var(--moss); color: #fff; border-color: var(--moss); }
+
+  /* ── PDF button ── */
+  .pdf-btn {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.15);
+    background: var(--chrome);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .pdf-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+  .pdf-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; }
+
+  /* ── Charts ── */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .chart-card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    border: 1px solid var(--fog);
+    padding: 1rem 1.25rem 1.25rem;
+  }
+  .chart-card-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--soil);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .chart-wrap { position: relative; height: 180px; }
+
+  /* ── Print header (oculto en pantalla) ── */
+  .print-header { display: none; }
+
+  /* ── Print / PDF ── */
+  @media print {
+    .topbar, .page-footer, .tf-row, .pdf-btn,
+    .dash-section-header .dash-updated { display: none !important; }
+
+    html, body { overflow: visible !important; height: auto !important; }
+    .app.dash-app { display: block !important; height: auto !important; overflow: visible !important; }
+    .dash-main { overflow: visible !important; padding: 1rem !important; }
+
+    .print-header {
+      display: block !important;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #1e1a14;
+      padding-bottom: 0.75rem;
+    }
+    .print-header h1 { font-size: 1.2rem; font-weight: 600; }
+    .print-header p  { font-size: 0.75rem; color: #666; margin-top: 0.25rem; }
+
+    .db-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 0.5rem !important; }
+    .db-stat  { min-height: 80px !important; padding: 0.6rem 0.8rem !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .db-stat-num { font-size: 1.8rem !important; }
+
+    .chart-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem !important; break-inside: avoid; }
+    .chart-wrap { height: 200px !important; }
+    .chart-card { break-inside: avoid; border: 1px solid #ccc !important; }
+
+    .dash-section { break-inside: avoid; margin-bottom: 1.5rem !important; }
+    .dash-section-header { margin-bottom: 0.75rem !important; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .db-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .dash-main { padding: 1.5rem 1rem; }
+    .dash-updated { display: none; }
+  }
+  @media (max-width: 480px) {
+    .db-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app dash-app">
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar">
+    <a class="topbar-home-link" href="./"><img class="topbar-icon" src="icon.png" alt="Inicio"></a>
+    <span class="topbar-brand">
+      Laboratorio Autocontenido Hidropónico de Industria 4.0
+    </span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-desc">Dashboard</span>
+    <a class="topbar-dashboard-btn" href="./">← Visualizador</a>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar modo">
+      <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </header>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="dash-main">
+
+    <!-- Header de impresión (oculto en pantalla) -->
+    <div class="print-header">
+      <h1>LAHI 4.0 — Reporte de monitoreo</h1>
+      <p id="print-date"></p>
+    </div>
+
+    <!-- ── RESUMEN GENERAL ── -->
+    <div class="dash-section">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">Resumen general</h2>
+        <span class="dash-updated" id="db-updated">Cargando…</span>
+      </div>
+      <div class="db-grid" id="overview-grid"></div>
+    </div>
+
+    <!-- ── GRÁFICAS ── -->
+    <div class="dash-section">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">
+          Gráficas — <span id="charts-range-label"></span>
+        </h2>
+        <div class="tf-row">
+          <span class="tf-label">Rango</span>
+          <div id="range-filter"></div>
+        </div>
+        <button class="pdf-btn" id="pdf-btn">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar PDF
+        </button>
+      </div>
+      <div class="chart-grid" id="chart-grid"></div>
+    </div>
+
+  </main>
+
+  <!-- ══ PAGE FOOTER ══ -->
+  <footer class="page-footer">
+    <div class="footer-logos">
+      <img class="footer-logo footer-logo-utn" src="logo-utn.png" alt="UTN" title="Universidad Tecnológica Nacional">
+      <img class="footer-logo footer-logo-giedii" src="logo-giedi.png" alt="GIEDI" title="GIEDI">
+    </div>
+    <div class="footer-sep"></div>
+    <p class="footer-text">
+      <strong>Universidad Tecnológica Nacional</strong>
+      Facultad Regional Santa Fe
+    </p>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>

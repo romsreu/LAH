@@ -1,0 +1,33 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ── Godot ──
+.godot/
+twin/.godot/
+twin/android/
+*.translation
+
+# ── Firmware (Arduino / ESP / PlatformIO) ──
+firmware/**/build/
+.pio/
+*.bin
+*.elf
+*.hex
+*.o
+
+# ── Web (por si sumás tooling después) ──
+node_modules/
+dist/
+
+# ── Editores ──
+.vscode/
+.idea/
+
+# ── Sistema ──
+.DS_Store
+Thumbs.db
