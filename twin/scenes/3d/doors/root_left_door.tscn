@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bb31woaa8q7qj"]
+
+[ext_resource type="PackedScene" uid="uid://b0msxy5u8ih61" path="res://assets/3d/cupboard/PuertaDerecha.gltf" id="1_x1x8y"]
+
+[node name="root_left_door" unique_id=581736911 instance=ExtResource("1_x1x8y")]

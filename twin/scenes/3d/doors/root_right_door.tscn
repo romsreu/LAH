@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://bqweukw0lwmmj"]
+
+[ext_resource type="PackedScene" uid="uid://b0msxy5u8ih61" path="res://assets/3d/cupboard/PuertaDerecha.gltf" id="1_8jlue"]
+[ext_resource type="Texture2D" uid="uid://blsxottgoyp51" path="res://assets/images/textures/metal2/Metal049C_1K-JPG_Color.jpg" id="2_ioxsq"]
+[ext_resource type="Texture2D" uid="uid://d3ttpqourr6sv" path="res://assets/images/textures/metal2/Metal049C_1K-JPG_Metalness.jpg" id="3_lp5lo"]
+[ext_resource type="Texture2D" uid="uid://cx1j1uf7xxpvm" path="res://assets/images/textures/metal2/Metal049C_1K-JPG_NormalGL.jpg" id="4_wfxeu"]
+[ext_resource type="Texture2D" uid="uid://buvhsmjfsjg2m" path="res://assets/images/textures/metal2/Metal049C_1K-JPG_Roughness.jpg" id="5_02lfe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ue1lu"]
+albedo_color = Color(0.46079057, 0.40959725, 0.33428982, 1)
+albedo_texture = ExtResource("2_ioxsq")
+metallic = 0.59
+metallic_texture = ExtResource("3_lp5lo")
+roughness = 0.29
+roughness_texture = ExtResource("5_02lfe")
+normal_enabled = true
+normal_texture = ExtResource("4_wfxeu")
+
+[node name="Root" unique_id=581736911 instance=ExtResource("1_8jlue")]
+
+[node name="Part 1" parent="." index="0" unique_id=1970732224]
+surface_material_override/0 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/1 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/2 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/3 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/4 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/5 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/6 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/7 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/8 = SubResource("StandardMaterial3D_ue1lu")
+surface_material_override/9 = SubResource("StandardMaterial3D_ue1lu")

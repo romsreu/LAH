@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://dkog83m07ljax"]
+
+[ext_resource type="PackedScene" uid="uid://cu7lc6uftu7q8" path="res://assets/3d/rs942/rs-942 pump.gltf" id="1_qa2kg"]
+
+[node name="Root" unique_id=1705746589 instance=ExtResource("1_qa2kg")]

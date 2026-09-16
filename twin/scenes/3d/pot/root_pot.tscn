@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://demafvvukn2wu"]
+
+[ext_resource type="PackedScene" uid="uid://dxxu0x18cuivy" path="res://assets/3d/pot/Voronoi planter.glb" id="1_deliy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_deliy"]
+albedo_color = Color(0.1148968, 0.11489681, 0.1148968, 1)
+
+[node name="empty_1" unique_id=1613089016 instance=ExtResource("1_deliy")]
+transform = Transform3D(0.2, 0, 0, 0, -8.742278e-09, 0.2, 0, -0.2, -8.742278e-09, 0, 0, 0)
+
+[node name="empty_2" parent="." index="0" unique_id=1787660965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1918.5052, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_deliy")

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto hidroponia — mapa de pines</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4ff;--bg2:#e8f0fe;--surface:#fff;--surface2:#f7fafc;
+  --border:#e2e8f0;--text:#1a202c;--muted:#718096;--subtle:#a0aec0;
+  --out-bg:#ebf8ff;--out-text:#2b6cb0;--out-border:#90cdf4;
+  --in-bg:#f0fff4;--in-text:#276749;--in-border:#9ae6b4;
+  --ana-bg:#fffaf0;--ana-text:#975a16;--ana-border:#fbd38d;
+  --relay-bg:#faf5ff;--relay-text:#6b46c1;--relay-border:#d6bcfa;
+  --out-bar:#63b3ed;--in-bar:#68d391;--ana-bar:#f6ad55;--relay-bar:#b794f4;
+}
+.dark{
+  --bg:#0d1117;--bg2:#161b27;--surface:#161b27;--surface2:#0d1117;
+  --border:#2d3748;--text:#e2e8f0;--muted:#718096;--subtle:#4a5568;
+  --out-bg:#1a2535;--out-text:#63b3ed;--out-border:#2b6cb0;
+  --in-bg:#1a2e22;--in-text:#68d391;--in-border:#276749;
+  --ana-bg:#2d2010;--ana-text:#f6ad55;--ana-border:#975a16;
+  --relay-bg:#261d35;--relay-text:#b794f4;--relay-border:#6b46c1;
+  --out-bar:#2b6cb0;--in-bar:#276749;--ana-bar:#975a16;--relay-bar:#6b46c1;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%);
+  min-height:100vh;
+  color:var(--text);
+  transition:background 0.25s,color 0.25s;
+}
+
+.wrap{padding:1rem;max-width:900px;margin:0 auto}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.header-title{font-size:15px;font-weight:600;color:var(--text)}
+.header-sub{font-size:12px;margin-top:2px;color:var(--muted);font-family:monospace}
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.toggle-label{font-size:12px;color:var(--muted)}
+.toggle-track{width:36px;height:20px;border-radius:20px;position:relative;transition:background 0.2s;flex-shrink:0;background:var(--out-bar)}
+.toggle-thumb{position:absolute;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left 0.2s;left:3px}
+.dark .toggle-thumb{left:19px}
+
+/* FILTER CHIPS */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.chip{font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px;border:1px solid var(--border);background:var(--surface);color:var(--muted)}
+.chip:hover{border-color:var(--subtle);color:var(--text)}
+.chip.active-all{background:var(--out-bg);color:var(--out-text);border-color:var(--out-border)}
+.chip.active-out{background:var(--out-bg);color:var(--out-text);border-color:var(--out-border)}
+.chip.active-in{background:var(--in-bg);color:var(--in-text);border-color:var(--in-border)}
+.chip.active-ana{background:var(--ana-bg);color:var(--ana-text);border-color:var(--ana-border)}
+.chip.active-relay{background:var(--relay-bg);color:var(--relay-text);border-color:var(--relay-border)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%}
+.dot-all{background:var(--subtle)}
+.dot-out{background:var(--out-bar)}
+.dot-in{background:var(--in-bar)}
+.dot-ana{background:var(--ana-bar)}
+.dot-relay{background:var(--relay-bar)}
+
+/* SECTION HEADER */
+.section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--subtle);padding:14px 4px 6px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.section-label.hidden{display:none}
+
+/* ─── DESKTOP: TABLE ─── */
+.table-wrap{display:block}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);color:var(--subtle)}
+tbody tr{border-left:3px solid transparent;transition:background 0.15s;border-bottom:1px solid var(--border)}
+tbody tr:hover td{background:var(--surface2)}
+tbody td{padding:8px 10px;font-size:12px;vertical-align:middle}
+.t-out{border-left-color:var(--out-bar)}
+.t-in{border-left-color:var(--in-bar)}
+.t-ana{border-left-color:var(--ana-bar)}
+.t-relay{border-left-color:var(--relay-bar)}
+.pin-name{font-family:monospace;font-weight:600;font-size:12px;color:var(--out-text)}
+.pin-num{font-family:monospace;font-size:12px;border-radius:5px;padding:2px 6px;display:inline-block;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.pin-desc{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;white-space:nowrap;border:1px solid transparent}
+.b-out{background:var(--out-bg);color:var(--out-text);border-color:var(--out-border)}
+.b-in{background:var(--in-bg);color:var(--in-text);border-color:var(--in-border)}
+.b-ana{background:var(--ana-bg);color:var(--ana-text);border-color:var(--ana-border)}
+.b-relay{background:var(--relay-bg);color:var(--relay-text);border-color:var(--relay-border)}
+.hidden{display:none!important}
+
+/* ─── MOBILE: CARD GRID ─── */
+.card-list{display:none;flex-direction:column;gap:8px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  border-left:4px solid var(--border);
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.card.t-out{border-left-color:var(--out-bar)}
+.card.t-in{border-left-color:var(--in-bar)}
+.card.t-ana{border-left-color:var(--ana-bar)}
+.card.t-relay{border-left-color:var(--relay-bar)}
+.card-pin{
+  font-family:monospace;
+  font-size:13px;
+  font-weight:700;
+  min-width:56px;
+  padding:4px 8px;
+  border-radius:6px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--muted);
+  text-align:center;
+  flex-shrink:0;
+}
+.card-body{flex:1;min-width:0}
+.card-name{font-family:monospace;font-weight:700;font-size:13px;color:var(--out-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card.t-in .card-name{color:var(--in-text)}
+.card.t-ana .card-name{color:var(--ana-text)}
+.card.t-relay .card-name{color:var(--relay-text)}
+.card-desc{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-badge{flex-shrink:0}
+
+@media(max-width:600px){
+  .table-wrap{display:none}
+  .card-list{display:flex}
+  .wrap{padding:0.85rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+
+  <div class="topbar">
+    <div>
+      <div class="header-title">Proyecto hidroponia</div>
+      <div class="header-sub">Arduino Mega — mapa de pines</div>
+    </div>
+    <div class="toggle" id="toggle">
+      <span class="toggle-label" id="toggle-label">claro</span>
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="chip active-all" data-filter="all"><span class="dot dot-all"></span>Todos</span>
+    <span class="chip" data-filter="out"><span class="dot dot-out"></span>Salida</span>
+    <span class="chip" data-filter="in"><span class="dot dot-in"></span>Entrada</span>
+    <span class="chip" data-filter="ana"><span class="dot dot-ana"></span>Analógica</span>
+    <span class="chip" data-filter="relay"><span class="dot dot-relay"></span>Relé</span>
+  </div>
+
+  <!-- ═══ DESKTOP TABLE ═══ -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:130px">Variable</th>
+          <th style="width:65px">Pin</th>
+          <th style="width:100px">Tipo</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr class="section-header-row" data-section="out" style="border:none"><td colspan="4"><div class="section-label" id="sec-out-d">Salidas digitales</div></td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">v0</td><td><span class="pin-num">29</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Ventilador LED</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">v1</td><td><span class="pin-num">23</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Ventilador lateral izq.</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">v2</td><td><span class="pin-num">25</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Ventilador lateral cen.</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">v3</td><td><span class="pin-num">27</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Ventilador lateral der.</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">b0</td><td><span class="pin-num">43</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Bomba principal</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">b1</td><td><span class="pin-num">31</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Bombita tanque 1 — pH A</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">b2</td><td><span class="pin-num">33</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Bombita tanque 2 — pH B</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">b3</td><td><span class="pin-num">35</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Bombita tanque 3 — EC 1</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">b4</td><td><span class="pin-num">37</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">Bombita tanque 4 — EC 2</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">LED1</td><td><span class="pin-num">39</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">LED estante arriba</td></tr>
+        <tr class="t-out" data-type="out"><td class="pin-name">LED2</td><td><span class="pin-num">41</span></td><td><span class="badge b-out">salida</span></td><td class="pin-desc">LED estante abajo</td></tr>
+
+        <tr class="section-header-row" data-section="in" style="border:none"><td colspan="4"><div class="section-label" id="sec-in-d">Entradas digitales</div></td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">DHTPIN_ext</td><td><span class="pin-num">2</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">DHT22 — temp/hum exterior</td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">DHTPIN_int</td><td><span class="pin-num">3</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">DHT22 — temp/hum interior</td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">Wtemp_pin</td><td><span class="pin-num">4</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">DS18B20 — temp solución (×2)</td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">c1</td><td><span class="pin-num">45</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">Caudalímetro tanque 1</td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">c2</td><td><span class="pin-num">47</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">Caudalímetro tanque 2</td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">c3</td><td><span class="pin-num">49</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">Caudalímetro tanque 3</td></tr>
+        <tr class="t-in" data-type="in"><td class="pin-name">c4</td><td><span class="pin-num">51</span></td><td><span class="badge b-in">entrada</span></td><td class="pin-desc">Caudalímetro tanque 4</td></tr>
+
+        <tr class="section-header-row" data-section="ana" style="border:none"><td colspan="4"><div class="section-label" id="sec-ana-d">Entradas analógicas</div></td></tr>
+        <tr class="t-ana" data-type="ana"><td class="pin-name">LDRpin</td><td><span class="pin-num">A0</span></td><td><span class="badge b-ana">analógica</span></td><td class="pin-desc">LDR — luz ambiente</td></tr>
+        <tr class="t-ana" data-type="ana"><td class="pin-name">pHPin</td><td><span class="pin-num">A1</span></td><td><span class="badge b-ana">analógica</span></td><td class="pin-desc">Sensor pH</td></tr>
+        <tr class="t-ana" data-type="ana"><td class="pin-name">ECPin</td><td><span class="pin-num">A2</span></td><td><span class="badge b-ana">analógica</span></td><td class="pin-desc">Sensor EC (conductividad)</td></tr>
+
+        <tr class="section-header-row" data-section="relay" style="border:none"><td colspan="4"><div class="section-label" id="sec-relay-d">Lógica de relés</div></td></tr>
+        <tr class="t-relay" data-type="relay"><td class="pin-name">b0, LED1, LED2</td><td><span class="pin-num">—</span></td><td><span class="badge b-relay">relé inverso</span></td><td class="pin-desc">Encendido LOW, apagado HIGH</td></tr>
+        <tr class="t-relay" data-type="relay"><td class="pin-name">v1, v2, v3</td><td><span class="pin-num">—</span></td><td><span class="badge b-relay">relé normal</span></td><td class="pin-desc">Encendido HIGH, apagado LOW</td></tr>
+        <tr class="t-relay" data-type="relay"><td class="pin-name">b1, b2, b3, b4</td><td><span class="pin-num">—</span></td><td><span class="badge b-relay">relé normal</span></td><td class="pin-desc">Encendido HIGH, apagado LOW</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══ MOBILE CARDS ═══ -->
+  <div class="card-list" id="card-list">
+
+    <div class="section-label" id="sec-out-m" data-section="out">Salidas digitales</div>
+    <div class="card t-out" data-type="out"><div class="card-pin">29</div><div class="card-body"><div class="card-name">v0</div><div class="card-desc">Ventilador LED</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">23</div><div class="card-body"><div class="card-name">v1</div><div class="card-desc">Ventilador lateral izq.</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">25</div><div class="card-body"><div class="card-name">v2</div><div class="card-desc">Ventilador lateral cen.</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">27</div><div class="card-body"><div class="card-name">v3</div><div class="card-desc">Ventilador lateral der.</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">43</div><div class="card-body"><div class="card-name">b0</div><div class="card-desc">Bomba principal</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">31</div><div class="card-body"><div class="card-name">b1</div><div class="card-desc">Bombita tanque 1 — pH A</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">33</div><div class="card-body"><div class="card-name">b2</div><div class="card-desc">Bombita tanque 2 — pH B</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">35</div><div class="card-body"><div class="card-name">b3</div><div class="card-desc">Bombita tanque 3 — EC 1</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">37</div><div class="card-body"><div class="card-name">b4</div><div class="card-desc">Bombita tanque 4 — EC 2</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">39</div><div class="card-body"><div class="card-name">LED1</div><div class="card-desc">LED estante arriba</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+    <div class="card t-out" data-type="out"><div class="card-pin">41</div><div class="card-body"><div class="card-name">LED2</div><div class="card-desc">LED estante abajo</div></div><div class="card-badge"><span class="badge b-out">salida</span></div></div>
+
+    <div class="section-label" id="sec-in-m" data-section="in">Entradas digitales</div>
+    <div class="card t-in" data-type="in"><div class="card-pin">2</div><div class="card-body"><div class="card-name">DHTPIN_ext</div><div class="card-desc">DHT22 — temp/hum exterior</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+    <div class="card t-in" data-type="in"><div class="card-pin">3</div><div class="card-body"><div class="card-name">DHTPIN_int</div><div class="card-desc">DHT22 — temp/hum interior</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+    <div class="card t-in" data-type="in"><div class="card-pin">4</div><div class="card-body"><div class="card-name">Wtemp_pin</div><div class="card-desc">DS18B20 — temp solución (×2)</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+    <div class="card t-in" data-type="in"><div class="card-pin">45</div><div class="card-body"><div class="card-name">c1</div><div class="card-desc">Caudalímetro tanque 1</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+    <div class="card t-in" data-type="in"><div class="card-pin">47</div><div class="card-body"><div class="card-name">c2</div><div class="card-desc">Caudalímetro tanque 2</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+    <div class="card t-in" data-type="in"><div class="card-pin">49</div><div class="card-body"><div class="card-name">c3</div><div class="card-desc">Caudalímetro tanque 3</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+    <div class="card t-in" data-type="in"><div class="card-pin">51</div><div class="card-body"><div class="card-name">c4</div><div class="card-desc">Caudalímetro tanque 4</div></div><div class="card-badge"><span class="badge b-in">entrada</span></div></div>
+
+    <div class="section-label" id="sec-ana-m" data-section="ana">Entradas analógicas</div>
+    <div class="card t-ana" data-type="ana"><div class="card-pin">A0</div><div class="card-body"><div class="card-name">LDRpin</div><div class="card-desc">LDR — luz ambiente</div></div><div class="card-badge"><span class="badge b-ana">analógica</span></div></div>
+    <div class="card t-ana" data-type="ana"><div class="card-pin">A1</div><div class="card-body"><div class="card-name">pHPin</div><div class="card-desc">Sensor pH</div></div><div class="card-badge"><span class="badge b-ana">analógica</span></div></div>
+    <div class="card t-ana" data-type="ana"><div class="card-pin">A2</div><div class="card-body"><div class="card-name">ECPin</div><div class="card-desc">Sensor EC (conductividad)</div></div><div class="card-badge"><span class="badge b-ana">analógica</span></div></div>
+
+    <div class="section-label" id="sec-relay-m" data-section="relay">Lógica de relés</div>
+    <div class="card t-relay" data-type="relay"><div class="card-pin">—</div><div class="card-body"><div class="card-name">b0, LED1, LED2</div><div class="card-desc">Encendido LOW, apagado HIGH</div></div><div class="card-badge"><span class="badge b-relay">inverso</span></div></div>
+    <div class="card t-relay" data-type="relay"><div class="card-pin">—</div><div class="card-body"><div class="card-name">v1, v2, v3</div><div class="card-desc">Encendido HIGH, apagado LOW</div></div><div class="card-badge"><span class="badge b-relay">normal</span></div></div>
+    <div class="card t-relay" data-type="relay"><div class="card-pin">—</div><div class="card-body"><div class="card-name">b1, b2, b3, b4</div><div class="card-desc">Encendido HIGH, apagado LOW</div></div><div class="card-badge"><span class="badge b-relay">normal</span></div></div>
+  </div>
+
+</div>
+
+<script>
+const wrap = document.getElementById('wrap');
+const toggle = document.getElementById('toggle');
+const label = document.getElementById('toggle-label');
+let isDark = false;
+
+toggle.addEventListener('click', () => {
+  isDark = !isDark;
+  document.body.classList.toggle('dark', isDark);
+  label.textContent = isDark ? 'oscuro' : 'claro';
+  toggle.querySelector('.toggle-track').style.background = isDark ? 'var(--out-bar)' : '';
+});
+
+const chips = document.querySelectorAll('.chip');
+const tableRows = document.querySelectorAll('#tbody tr[data-type]');
+const tableHeaders = document.querySelectorAll('#tbody .section-header-row');
+const mobileCards = document.querySelectorAll('#card-list .card');
+const mobileSections = document.querySelectorAll('#card-list .section-label');
+
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    const filter = chip.dataset.filter;
+    chips.forEach(c => c.className = 'chip');
+    chip.classList.add(filter === 'all' ? 'active-all' : 'active-' + filter);
+
+    // table rows
+    tableRows.forEach(r => r.classList.toggle('hidden', filter !== 'all' && r.dataset.type !== filter));
+    tableHeaders.forEach(h => {
+      const sec = h.dataset.section;
+      const has = [...tableRows].some(r => r.dataset.type === sec && !r.classList.contains('hidden'));
+      h.classList.toggle('hidden', !has);
+    });
+
+    // mobile cards
+    mobileCards.forEach(c => c.classList.toggle('hidden', filter !== 'all' && c.dataset.type !== filter));
+    mobileSections.forEach(h => {
+      const sec = h.dataset.section;
+      const has = [...mobileCards].some(c => c.dataset.type === sec && !c.classList.contains('hidden'));
+      h.classList.toggle('hidden', !has);
+    });
+  });
+});
+</script>
+</body>
+</html>

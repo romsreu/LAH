@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://do8ome0g3jm03"]
+
+[ext_resource type="PackedScene" uid="uid://crqquhp2ibmuw" path="res://assets/3d/fan/aspas_fan.gltf" id="1_s4ico"]
+[ext_resource type="Texture2D" uid="uid://rrwu4vxbrdfb" path="res://assets/images/textures/plastic/Plastic012B_1K-JPG_Color.jpg" id="2_4q77a"]
+[ext_resource type="Texture2D" uid="uid://c6cfyrpyaahfc" path="res://assets/images/textures/plastic/Plastic012B_1K-JPG_NormalGL.jpg" id="3_xeylo"]
+[ext_resource type="Texture2D" uid="uid://hb64735fg1ty" path="res://assets/images/textures/plastic/Plastic012B_1K-JPG_Roughness.jpg" id="4_wdm72"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lgq6l"]
+albedo_texture = ExtResource("2_4q77a")
+roughness_texture = ExtResource("4_wdm72")
+normal_enabled = true
+normal_texture = ExtResource("3_xeylo")
+
+[node name="Root" unique_id=1215375746 instance=ExtResource("1_s4ico")]
+
+[node name="Part 2" parent="." index="0" unique_id=1878770347]
+surface_material_override/0 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/1 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/2 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/3 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/4 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/5 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/6 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/7 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/8 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/9 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/10 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/11 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/12 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/13 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/14 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/15 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/16 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/17 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/18 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/19 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/20 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/21 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/22 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/23 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/24 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/25 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/26 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/27 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/28 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/29 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/30 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/31 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/32 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/33 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/34 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/35 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/36 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/37 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/38 = SubResource("StandardMaterial3D_lgq6l")
+surface_material_override/39 = SubResource("StandardMaterial3D_lgq6l")

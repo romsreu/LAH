@@ -1,0 +1,309 @@
+[gd_scene format=3 uid="uid://dp5w7hcf00ryq"]
+
+[ext_resource type="Script" uid="uid://g8yyrbk6m3hm" path="res://scripts/main.gd" id="1_ceew7"]
+[ext_resource type="PackedScene" uid="uid://bt6hkm7mkqoki" path="res://scenes/3d/cupboard/root_cupboard.tscn" id="2_0rbkm"]
+[ext_resource type="Script" uid="uid://dndqw65wecnwa" path="res://scripts/pivot_puerta_derecha.gd" id="3_jlph5"]
+[ext_resource type="PackedScene" uid="uid://ieknj06ag4ah" path="res://scenes/3d/doors/root_door.tscn" id="4_miwuy"]
+[ext_resource type="Texture2D" uid="uid://c2vxpl3xaihxm" path="res://assets/images/textures/glass/Glass_Frosted_001_basecolor.jpg" id="5_s8hey"]
+[ext_resource type="Texture2D" uid="uid://dii4njej1byr3" path="res://assets/images/textures/glass/Glass_Frosted_001_ambientOcclusion.jpg" id="6_eu6jb"]
+[ext_resource type="Texture2D" uid="uid://b788l07jxdwn0" path="res://assets/images/textures/glass/Glass_Frosted_001_height.png" id="7_n2okt"]
+[ext_resource type="Texture2D" uid="uid://bfue7fdfu3weg" path="res://assets/images/textures/glass/Glass_Frosted_001_normal.jpg" id="8_klwnv"]
+[ext_resource type="Texture2D" uid="uid://bgntl8j4x7p82" path="res://assets/images/textures/glass/Glass_Frosted_001_roughness.jpg" id="9_duvak"]
+[ext_resource type="Script" uid="uid://0y4yxiv3sua1" path="res://scripts/pivot_puerta_izquierda.gd" id="10_ym87n"]
+[ext_resource type="PackedScene" uid="uid://bqweukw0lwmmj" path="res://scenes/3d/doors/root_right_door.tscn" id="11_oi7y8"]
+[ext_resource type="PackedScene" uid="uid://byt1vph8s8tyy" path="res://scenes/3d/fan/Fan.tscn" id="12_ssmb3"]
+[ext_resource type="PackedScene" uid="uid://demafvvukn2wu" path="res://scenes/3d/pot/root_pot.tscn" id="13_qr6kf"]
+[ext_resource type="ArrayMesh" uid="uid://dmifg2bxpvy6q" path="res://scenes/3d/lights/lights.obj" id="14_h0n86"]
+[ext_resource type="PackedScene" uid="uid://d3ja3cufngdoi" path="res://scenes/3d/dht22/root_dht22.tscn" id="15_2tsw6"]
+[ext_resource type="PackedScene" uid="uid://dkog83m07ljax" path="res://scenes/3d/rs942/root_rs942.tscn" id="16_0rbkm"]
+[ext_resource type="Script" uid="uid://bguoue80ef1s3" path="res://scripts/camara_pivot.gd" id="16_4frjy"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tbgi4"]
+size = Vector3(1.13403, 4.5527687, 0.1340332)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_mo7bd"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3p570"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(1, 1, 1, 0.27450982)
+albedo_texture = ExtResource("5_s8hey")
+roughness_texture = ExtResource("9_duvak")
+normal_enabled = true
+normal_texture = ExtResource("8_klwnv")
+ao_enabled = true
+ao_light_affect = 0.28
+ao_texture = ExtResource("6_eu6jb")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jyhfs"]
+size = Vector3(1.3150735, 4.5861664, 0.15991211)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_miwuy"]
+sky_top_color = Color(0.235, 0.4, 0.6, 1)
+sky_horizon_color = Color(0.75, 0.8, 0.85, 1)
+sky_curve = 0.15
+sky_energy_multiplier = 1.6
+ground_bottom_color = Color(0.18, 0.19, 0.21, 1)
+ground_horizon_color = Color(0.75, 0.8, 0.85, 1)
+ground_curve = 0.15
+sun_angle_max = 30.0
+
+[sub_resource type="Sky" id="Sky_s8hey"]
+sky_material = SubResource("ProceduralSkyMaterial_miwuy")
+
+[sub_resource type="Environment" id="Environment_a8y0u"]
+background_mode = 2
+background_energy_multiplier = 1.1
+sky = SubResource("Sky_s8hey")
+ambient_light_source = 3
+ambient_light_color = Color(5.7130203, 5.7130203, 5.7130203, 1)
+ambient_light_energy = 1.1
+tonemap_exposure = 1.1
+
+[node name="Main" type="Node3D" unique_id=1631033161]
+script = ExtResource("1_ceew7")
+
+[node name="PivotArmario" type="Node3D" parent="." unique_id=248595810]
+transform = Transform3D(1.0000001, 0, 5.237758e-05, 0, 1, 0, -5.237758e-05, 0, 1.0000001, 1.9094858, 2.63069, -1.3726668)
+
+[node name="Armario" parent="PivotArmario" unique_id=1566148049 instance=ExtResource("2_0rbkm")]
+transform = Transform3D(3.0000007, -1.2303159e-19, -5.820766e-11, -2.1676888e-19, 3.0000007, 0, 7.2759576e-11, -1.4210853e-14, 3.0000002, -0.5316032, -2.5512729, 1.8939168)
+
+[node name="PivotPuertaDerecha" type="Node3D" parent="PivotArmario/Armario" unique_id=671319926]
+transform = Transform3D(0.04447763, -1.060762e-14, 0.33035332, -2.2500512e-14, 0.33333388, 2.8125884e-15, -0.33035335, -2.5659035e-14, 0.044477634, 0.582061, 0.70256907, -0.35441273)
+script = ExtResource("3_jlph5")
+
+[node name="InputPuertaDerecha" type="Area3D" parent="PivotArmario/Armario/PivotPuertaDerecha" unique_id=1579350233]
+transform = Transform3D(0.13208336, 7.0431704e-15, -0.9912386, -7.04317e-15, 0.99999976, 6.1669284e-15, 0.9912386, 6.166937e-15, 0.13208336, 0.08586928, 0.74825823, 0.6379869)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PivotArmario/Armario/PivotPuertaDerecha/InputPuertaDerecha" unique_id=961987987]
+transform = Transform3D(0.99999815, 1.4595436e-19, -1.0826625e-08, 2.8560892e-20, 1, -3.726945e-19, 1.21071935e-08, 7.1828394e-19, 0.99999815, -1.2623279, -0.65695786, 0.067511916)
+shape = SubResource("BoxShape3D_tbgi4")
+debug_color = Color(0.010181468, 0.0017466176, 0.008044679, 1)
+
+[node name="PuertaDerecha2" parent="PivotArmario/Armario/PivotPuertaDerecha/InputPuertaDerecha" unique_id=1487957710 instance=ExtResource("4_miwuy")]
+transform = Transform3D(2.8665526, 2.561137e-09, 4.1633363e-17, -4.182225e-21, -1.1982362e-07, 2.749995, 2.0954758e-09, -2.741246, -1.202061e-07, -2.0765061, -2.7238264, 1.1237068)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PivotArmario/Armario/PivotPuertaDerecha" unique_id=1649569001]
+transform = Transform3D(-0.07216941, 0.9751775, -6.964827e-08, -2.1679336e-09, -3.4943078e-08, -2.014671, -0.5163889, -0.13628863, 1.8192289e-08, -0.052366674, -0.01950097, -0.57199335)
+mesh = SubResource("PlaneMesh_mo7bd")
+surface_material_override/0 = SubResource("StandardMaterial3D_3p570")
+
+[node name="PivotPuertaIzquierda" type="Node3D" parent="PivotArmario/Armario" unique_id=1804229504]
+transform = Transform3D(-0.3326751, -2.8751838e-08, -0.02093014, -2.7815545e-08, 0.33333328, -1.5784906e-08, 0.020930141, -1.4007215e-08, -0.33267516, -0.25649217, 0.8440971, -0.35386118)
+script = ExtResource("10_ym87n")
+
+[node name="InputPuertaIzquierda" type="Area3D" parent="PivotArmario/Armario/PivotPuertaIzquierda" unique_id=1034834399]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14557368, 0, 0.007733673)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PivotArmario/Armario/PivotPuertaIzquierda/InputPuertaIzquierda" unique_id=249387504]
+transform = Transform3D(0.99616444, -4.46592e-09, -0.087538525, 3.8248333e-09, 1, -7.486587e-09, 0.087538496, 7.1228996e-09, 0.99616444, -0.7897248, -0.3312149, -0.09495416)
+shape = SubResource("BoxShape3D_jyhfs")
+debug_color = Color(0.0006216452, 0.0048213117, 1.8801075e-10, 1)
+
+[node name="Root" parent="PivotArmario/Armario/PivotPuertaIzquierda/InputPuertaIzquierda" unique_id=581736911 instance=ExtResource("11_oi7y8")]
+transform = Transform3D(2.8607469, 0.17436847, 1.3103949e-08, -5.006216e-09, -1.3024243e-07, 2.749995, 0.18233907, -2.7356925, -1.3008807e-07, -1.205754, -2.6096423, -0.018305898)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PivotArmario/Armario/PivotPuertaIzquierda/InputPuertaIzquierda" unique_id=770224267]
+transform = Transform3D(-0.57105947, 0.058300134, 7.3097695e-10, -1.5221218e-09, -3.803543e-08, -2.0146708, -0.033917196, -0.9815906, 7.8109416e-08, -0.8045571, -0.2898271, -0.025233954)
+mesh = SubResource("PlaneMesh_mo7bd")
+surface_material_override/0 = SubResource("StandardMaterial3D_3p570")
+
+[node name="Fans" type="Node3D" parent="PivotArmario/Armario" unique_id=1764740289]
+
+[node name="FanDerInf" parent="PivotArmario/Armario/Fans" unique_id=695988897 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.9999999, -4.7293724e-11, 1.4658413e-16, 7.225625e-20, -4.3711367e-08, 0.99999976, -3.6379788e-11, -1, -4.371137e-08, -0.09502414, 0.8920814, -0.79804313)
+
+[node name="FanMidInf" parent="PivotArmario/Armario/Fans" unique_id=948237577 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.9999999, -4.7293724e-11, 1.4658413e-16, 7.225625e-20, -4.3711367e-08, 0.99999976, -3.6379788e-11, -1, -4.371137e-08, 0.15553325, 0.89143276, -0.79942256)
+
+[node name="FanIzqInf" parent="PivotArmario/Armario/Fans" unique_id=964893211 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.9999999, -4.7293724e-11, 1.4615045e-16, 7.225625e-20, -4.3711374e-08, 0.99999976, -3.6379788e-11, -1, -4.371138e-08, 0.40678096, 0.8918581, -0.7992866)
+
+[node name="FanDerSup" parent="PivotArmario/Armario/Fans" unique_id=335519649 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.9999999, -4.7293724e-11, 1.4615045e-16, 7.225625e-20, -4.3711374e-08, 0.99999976, -3.6379788e-11, -1, -4.371138e-08, -0.09658289, 1.3234528, -0.8038978)
+
+[node name="FanMidSup" parent="PivotArmario/Armario/Fans" unique_id=2052575846 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.9999999, -4.7293724e-11, 1.4615045e-16, 7.225625e-20, -4.3711374e-08, 0.99999976, -3.6379788e-11, -1, -4.371138e-08, 0.15252799, 1.321041, -0.8010044)
+
+[node name="FanIzqSup" parent="PivotArmario/Armario/Fans" unique_id=1024129448 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.9999999, -4.7293724e-11, 1.4615045e-16, 7.225625e-20, -4.3711374e-08, 0.99999976, -3.6379788e-11, -1, -4.371138e-08, 0.40213144, 1.3218336, -0.8001938)
+
+[node name="FanIzqLat" parent="PivotArmario/Armario/Fans" unique_id=122553567 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(-4.375761e-08, -0.9999999, 1.4615045e-16, -4.3711374e-08, 1.910614e-15, 0.99999976, -1, 4.3743057e-08, -4.371138e-08, -0.28041363, 0.9117925, -0.5832581)
+
+[node name="FanDerLat" parent="PivotArmario/Armario/Fans" unique_id=1109948025 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(-4.366302e-08, 0.9999999, 1.4615045e-16, 4.3711374e-08, 1.9107579e-15, 0.99999976, 1, 4.3673936e-08, -4.371138e-08, 0.6095939, 0.9123821, -0.57087415)
+
+[node name="FanSup1" parent="PivotArmario/Armario/Fans" unique_id=678679732 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.8100005, 1.3468834e-07, 1.2212331e-07, 1.223066e-07, -0.89199996, -7.0725e-08, 1.2230157e-07, 7.7981106e-08, -0.80899996, 0.04745543, 1.5752258, -0.59075993)
+
+[node name="FanSup2" parent="PivotArmario/Armario/Fans" unique_id=149686771 instance=ExtResource("12_ssmb3")]
+transform = Transform3D(0.8100007, 1.3468838e-07, 1.2210876e-07, 1.223066e-07, -0.89199996, -7.0725e-08, 1.2230157e-07, 7.7981106e-08, -0.80899996, 0.27712178, 1.5752258, -0.5907479)
+
+[node name="Pots" type="Node3D" parent="PivotArmario/Armario" unique_id=237169980]
+transform = Transform3D(0.33333322, 1.3670197e-20, -1.7459177e-05, 2.4085415e-20, 0.33333325, -1.2615352e-24, 1.7459179e-05, 1.578983e-15, 0.33333325, -0.45931798, -0.12567724, -0.1737834)
+
+[node name="Pot1" parent="PivotArmario/Armario/Pots" unique_id=1613089016 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 0.95811397, 1.9596276, -0.6888472)
+
+[node name="Pot2" parent="PivotArmario/Armario/Pots" unique_id=1875250323 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 0.95811397, 1.9596276, -1.0157508)
+
+[node name="Pot3" parent="PivotArmario/Armario/Pots" unique_id=1510213735 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 0.95811397, 1.9596276, -1.34747)
+
+[node name="Pot4" parent="PivotArmario/Armario/Pots" unique_id=1778963932 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.3585832, 1.9596276, -0.6888472)
+
+[node name="Pot5" parent="PivotArmario/Armario/Pots" unique_id=789707434 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.7697065, 1.9596276, -0.6888472)
+
+[node name="Pot6" parent="PivotArmario/Armario/Pots" unique_id=253155170 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.764533, 1.9596276, -1.0221112)
+
+[node name="Pot7" parent="PivotArmario/Armario/Pots" unique_id=1926688133 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.5756147, 1.9596276, -1.0195122)
+
+[node name="Pot8" parent="PivotArmario/Armario/Pots" unique_id=1852698961 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.5756147, 1.9596276, -0.684916)
+
+[node name="Pot9" parent="PivotArmario/Armario/Pots" unique_id=687502916 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.5756147, 1.9596276, -1.3489741)
+
+[node name="Pot10" parent="PivotArmario/Armario/Pots" unique_id=1593683345 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.1689985, 1.9596276, -1.0195122)
+
+[node name="Pot11" parent="PivotArmario/Armario/Pots" unique_id=1839664087 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.1689985, 1.9596276, -0.6874031)
+
+[node name="Pot12" parent="PivotArmario/Armario/Pots" unique_id=769981471 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.1689985, 1.9596276, -1.3349035)
+
+[node name="Pot13" parent="PivotArmario/Armario/Pots" unique_id=2110587793 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.764533, 1.9596276, -1.346458)
+
+[node name="Pot14" parent="PivotArmario/Armario/Pots" unique_id=2090800377 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.3585832, 1.9596276, -1.017673)
+
+[node name="Pot15" parent="PivotArmario/Armario/Pots" unique_id=1906130197 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.3585832, 1.9596276, -1.3503034)
+
+[node name="Pot16" parent="PivotArmario/Armario/Pots" unique_id=1632232166 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 0.96163696, 3.556917, -0.6888472)
+
+[node name="Pot17" parent="PivotArmario/Armario/Pots" unique_id=199294912 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 0.96163696, 3.556917, -1.0157508)
+
+[node name="Pot18" parent="PivotArmario/Armario/Pots" unique_id=493315511 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 0.96163696, 3.556917, -1.34747)
+
+[node name="Pot19" parent="PivotArmario/Armario/Pots" unique_id=543945424 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.3621062, 3.556917, -0.6888472)
+
+[node name="Pot20" parent="PivotArmario/Armario/Pots" unique_id=1679903206 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.7732295, 3.556917, -0.6888472)
+
+[node name="Pot21" parent="PivotArmario/Armario/Pots" unique_id=691990674 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.768056, 3.556917, -1.0221112)
+
+[node name="Pot22" parent="PivotArmario/Armario/Pots" unique_id=1298070606 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.5791378, 3.556917, -1.0195122)
+
+[node name="Pot23" parent="PivotArmario/Armario/Pots" unique_id=1982241231 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.5791378, 3.556917, -0.684916)
+
+[node name="Pot24" parent="PivotArmario/Armario/Pots" unique_id=377913011 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.5791378, 3.556917, -1.3489741)
+
+[node name="Pot25" parent="PivotArmario/Armario/Pots" unique_id=472902693 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.1725216, 3.556917, -1.0195122)
+
+[node name="Pot26" parent="PivotArmario/Armario/Pots" unique_id=1126171201 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.1725216, 3.556917, -0.6874031)
+
+[node name="Pot27" parent="PivotArmario/Armario/Pots" unique_id=1539569464 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 2.1725216, 3.556917, -1.3349035)
+
+[node name="Pot28" parent="PivotArmario/Armario/Pots" unique_id=354559731 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.768056, 3.556917, -1.346458)
+
+[node name="Pot29" parent="PivotArmario/Armario/Pots" unique_id=29440953 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.3621062, 3.556917, -1.017673)
+
+[node name="Pot30" parent="PivotArmario/Armario/Pots" unique_id=694374686 instance=ExtResource("13_qr6kf")]
+transform = Transform3D(0.0010603324, 0, 0, 0, -4.719221e-11, 0.001, 0, -0.0010796319, -4.371139e-11, 1.3621062, 3.556917, -1.3503034)
+
+[node name="UVLights" type="Node3D" parent="PivotArmario/Armario" unique_id=2019670140]
+transform = Transform3D(0.33333322, 1.3670197e-20, -1.7459177e-05, 2.4085415e-20, 0.33333325, -1.2615352e-24, 1.7459179e-05, 1.578983e-15, 0.33333325, -0.45931798, -0.12567724, -0.1737834)
+
+[node name="Uv1" type="MeshInstance3D" parent="PivotArmario/Armario/UVLights" unique_id=2089308475]
+transform = Transform3D(0.0005085449, 0, 0, 0, 0.001, 0, 0, 0, 0.00054014183, 1.5118902, 4.9296665, -1.2776332)
+mesh = ExtResource("14_h0n86")
+
+[node name="Uv2" type="MeshInstance3D" parent="PivotArmario/Armario/UVLights" unique_id=702451361]
+transform = Transform3D(0.0005085449, 0, 0, 0, 0.001, 0, 0, 0, 0.00054014183, 2.2058537, 4.9296665, -1.2776332)
+mesh = ExtResource("14_h0n86")
+
+[node name="Uv3" type="MeshInstance3D" parent="PivotArmario/Armario/UVLights" unique_id=2080954496]
+transform = Transform3D(0.0005085449, 0, 0, 0, 0.001, 0, 0, 0, 0.00054014183, 1.1019207, 3.2498357, -1.2776332)
+mesh = ExtResource("14_h0n86")
+
+[node name="Uv4" type="MeshInstance3D" parent="PivotArmario/Armario/UVLights" unique_id=433465760]
+transform = Transform3D(0.0005085449, 0, 0, 0, 0.001, 0, 0, 0, 0.00054014183, 2.617086, 3.2498357, -1.2776332)
+mesh = ExtResource("14_h0n86")
+
+[node name="UVLightIzqSup" type="OmniLight3D" parent="PivotArmario/Armario/UVLights" unique_id=1960523286]
+transform = Transform3D(1, 2.4811052e-19, 5.2377585e-05, -3.4465844e-26, 1, -4.7369593e-15, -5.2377585e-05, 4.7369593e-15, 1, 1.515235, 4.764241, -1.2526608)
+light_color = Color(1, 0, 1, 1)
+
+[node name="UVLightDerSup" type="OmniLight3D" parent="PivotArmario/Armario/UVLights" unique_id=1009743813]
+transform = Transform3D(1, 2.4811052e-19, 5.2377585e-05, -3.4465844e-26, 1, -4.7369593e-15, -5.2377585e-05, 4.7369593e-15, 1, 2.2212992, 4.761971, -1.272477)
+light_color = Color(1, 0, 1, 1)
+
+[node name="UVLightIzqInf" type="OmniLight3D" parent="PivotArmario/Armario/UVLights" unique_id=1714613724]
+transform = Transform3D(1, 2.4811052e-19, 5.2377585e-05, -4.739054e-26, 1, -4.7369593e-15, -5.2377585e-05, 4.7369593e-15, 1, 1.0998046, 3.1023715, -1.2152088)
+light_color = Color(1, 0, 1, 1)
+light_volumetric_fog_energy = 12.881
+
+[node name="UVLightDerInf" type="OmniLight3D" parent="PivotArmario/Armario/UVLights" unique_id=1604543101]
+transform = Transform3D(1, 2.4811052e-19, 5.2377585e-05, -4.3082307e-26, 1, -4.7369593e-15, -5.2377585e-05, 4.7369593e-15, 1, 2.6066456, 3.1307228, -1.2921335)
+light_color = Color(1, 0, 1, 1)
+
+[node name="DHT22" type="Node3D" parent="PivotArmario/Armario" unique_id=701154976]
+
+[node name="Sketchfab_Scene" parent="PivotArmario/Armario/DHT22" unique_id=2097833738 instance=ExtResource("15_2tsw6")]
+transform = Transform3D(0.00527814, 0.34782103, 0.83005613, -0.23101225, 0.8027826, -0.334923, -0.8698306, -0.21109483, 0.09398664, 0.5481891, 1.2149968, -0.77462125)
+
+[node name="Sketchfab_Scene2" parent="PivotArmario/Armario/DHT22" unique_id=1671540171 instance=ExtResource("15_2tsw6")]
+transform = Transform3D(0.0052781804, 0.3478211, 0.8300559, -0.23101225, 0.80278236, -0.33492348, -0.8698306, -0.21109478, 0.09398682, 0.5566197, 1.5978153, -0.6739509)
+
+[node name="rs942" parent="PivotArmario/Armario" unique_id=1705746589 instance=ExtResource("16_0rbkm")]
+transform = Transform3D(4.371139e-08, 6.602206e-15, 1.0000011, 1.509958e-07, -1, 1.9698103e-18, 1, 1.509958e-07, -4.3711434e-08, -0.08295232, 0, -0.68406236)
+
+[node name="CamaraPivot" type="Node3D" parent="." unique_id=1215848847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9333777, 2.5494952, -1.303116)
+script = ExtResource("16_4frjy")
+zoom_speed = 10.0
+
+[node name="Camera3D" type="Camera3D" parent="CamaraPivot" unique_id=1909915838]
+transform = Transform3D(0.999992, -0.0004494694, 0.0039714393, 0, 0.9936566, 0.11245752, -0.0039967927, -0.11245663, 0.9936486, -0.045669317, 0.21685076, 4.034963)
+visible = false
+fov = 92.81249
+
+[node name="Ambient" type="Node3D" parent="." unique_id=1885972751]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Ambient" unique_id=978970746]
+transform = Transform3D(0.7344291, -0.3013111, 0.60813284, 0, 0.8960452, 0.44396287, -0.6786854, -0.32605925, 0.6580817, 5.815361, 6.3664117, 6.585278)
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="Ambient" unique_id=1531719869]
+transform = Transform3D(0.5839239, 0.36041278, -0.7274171, -2.0226398e-08, 0.8960452, 0.4439628, 0.81180847, -0.25924045, 0.52322215, -3.3620746, 6.3664117, 1.8820887)
+
+[node name="DirectionalLight3D3" type="DirectionalLight3D" parent="Ambient" unique_id=821166996]
+transform = Transform3D(-0.99074787, -0.060252648, 0.12160718, -3.7628688e-08, 0.8960452, 0.4439628, -0.13571545, 0.43985522, -0.8877549, 0.2057364, 6.3664117, -8.8423195)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Ambient" unique_id=1967310756]
+environment = SubResource("Environment_a8y0u")
+
+[connection signal="input_event" from="PivotArmario/Armario/PivotPuertaDerecha/InputPuertaDerecha" to="PivotArmario/Armario/PivotPuertaDerecha" method="_on_input_puerta_derecha_input_event"]
+[connection signal="input_event" from="PivotArmario/Armario/PivotPuertaIzquierda/InputPuertaIzquierda" to="PivotArmario/Armario/PivotPuertaIzquierda" method="_on_input_puerta_izquierda_input_event"]
