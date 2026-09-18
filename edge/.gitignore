@@ -1,0 +1,13 @@
+# Secretos — NUNCA versionar
+config/.env
+
+# Buffer local SQLite y logs (estado de runtime, no código)
+buffer.db
+*.db
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
