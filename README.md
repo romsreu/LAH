@@ -15,7 +15,7 @@ Este repositorio reúne el código fuente, la documentación técnica, esquemas 
 Es un monorepo: cada subsistema del laboratorio vive en su propia carpeta de nivel superior.
 
 ```
-hydrolab/
+LAH/
 ├── firmware/          # Código embebido (Arduino / C++)
 │   ├── main/          #   Sketch principal: control, sensores, actuadores, display
 │   └── tests/         #   Sketches de prueba por componente (DHT22, pH/EC, bombas…)
