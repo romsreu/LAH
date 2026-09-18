@@ -20,6 +20,11 @@ hydrolab/
 │   ├── main/          #   Sketch principal: control, sensores, actuadores, display
 │   └── tests/         #   Sketches de prueba por componente (DHT22, pH/EC, bombas…)
 │
+├── edge/              # Bridge en la Raspberry Pi (Python)
+│   ├── src/           #   Lee el Arduino por serie y publica en InfluxDB Cloud
+│   ├── config/        #   Plantilla de variables de entorno
+│   └── systemd/       #   Unit para arranque automático
+│
 ├── twin/              # Gemelo digital interactivo en Godot (visualización 3D)
 │
 ├── web/               # Sitios web del sistema
@@ -36,6 +41,7 @@ hydrolab/
 | Carpeta | Qué contiene | Tecnología |
 |---|---|---|
 | `firmware/` | Adquisición de sensores, control de actuadores, lógica de programas y display. `main/` es el sketch de producción; `tests/` valida cada componente por separado. | Arduino / C++ |
+| `edge/` | Bridge que corre en la Raspberry Pi: pide lecturas al Arduino por puerto serie, las mapea al esquema de InfluxDB y las publica. Incluye buffer local (SQLite) para cortes de conexión y servicio `systemd` para arranque automático. | Python / InfluxDB |
 | `twin/` | Modelo digital interactivo del armario y sus componentes. | Godot, Onshape |
 | `web/` | Interfaz de usuario: landing con la simulación 3D embebida y dashboard de monitoreo. | HTML / CSS / JS |
 | `tools/` | Scripts de apoyo al desarrollo (p. ej. `simulate_data.py`, `mapa_pines.html`). | Python / HTML |
