@@ -1,13 +1,9 @@
 # LAHI 4.0 — edge
 
 Bridge que corre en la Raspberry Pi: le pide lecturas al Arduino Mega por puerto
-serie y las publica en InfluxDB Cloud, que alimenta los dashboards de Grafana.
+serie y las publica en InfluxDB Cloud para el posterior uso de clientes.
 
-```
-Arduino Mega ──serie 9600──> Raspberry Pi ──HTTPS──> InfluxDB Cloud ──> Grafana
-                                   │
-                                   └─ sin internet ─> buffer.db (SQLite)
-```
+<img width="2058" height="764" alt="flujo_de_persistencia" src="https://github.com/user-attachments/assets/9d9f2921-8f64-4b33-ba66-2e141e765fca" />
 
 ## Estructura
 
