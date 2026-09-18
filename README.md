@@ -28,7 +28,7 @@ hydrolab/
 ├── twin/              # Gemelo digital interactivo en Godot (visualización 3D)
 │
 ├── web/               # Sitios web del sistema
-│   ├── sites/lah/     #   Sitio principal - landing + dashboard
+│   └── sites/lah/     #   Sitio principal - landing + dashboard
 │   
 ├── tools/             # Utilidades: simulador de datos, mapa de pines
 ├── docs/              # Documentación técnica, informes y esquemas (PDF)
