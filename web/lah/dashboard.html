@@ -129,6 +129,10 @@
   .tf-btn:hover { border-color: var(--moss); color: var(--moss); }
   .tf-btn.active { background: var(--moss); color: #fff; border-color: var(--moss); }
 
+  /* ── Fuente de datos: en simulación se marca en ámbar para no confundir ── */
+  #source-filter .tf-btn[data-source="sim"].active { background: #d98c1f; border-color: #d98c1f; }
+  body[data-source="sim"] .dash-main { box-shadow: inset 0 3px 0 #d98c1f; }
+
   /* ── PDF button ── */
   .pdf-btn {
     margin-left: auto;
@@ -246,12 +250,17 @@
     <div class="print-header">
       <h1>LAHI 4.0 — Reporte de monitoreo</h1>
       <p id="print-date"></p>
+      <p class="source-tag" id="source-tag"></p>
     </div>
 
     <!-- ── RESUMEN GENERAL ── -->
     <div class="dash-section">
       <div class="dash-section-header">
         <h2 class="dash-section-title">Resumen general</h2>
+        <div class="tf-row">
+          <span class="tf-label">Fuente</span>
+          <div id="source-filter"></div>
+        </div>
         <span class="dash-updated" id="db-updated">Cargando…</span>
       </div>
       <div class="db-grid" id="overview-grid"></div>

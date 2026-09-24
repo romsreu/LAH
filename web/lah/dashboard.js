@@ -3,8 +3,27 @@ const INFLUX = {
   url:    'https://us-east-1-1.aws.cloud2.influxdata.com',
   token:  '',
   org:    'romsreu',
-  bucket: 'hydrolab',
 };
+
+// ── Fuente de datos (bucket) ──────────────────────────────────────────────
+// real → datos de la Raspberry · sim → datos de testing (tools/simulate_data.py)
+const SOURCES = {
+  real: { bucket: 'LAH',     label: 'Real'       },
+  sim:  { bucket: 'LAH-sim', label: 'Simulación' },
+};
+
+function initialSource() {
+  const fromUrl = new URLSearchParams(location.search).get('src');
+  if (SOURCES[fromUrl]) return fromUrl;
+  try {
+    const saved = localStorage.getItem('lah-source');
+    if (SOURCES[saved]) return saved;
+  } catch (_) {}
+  return 'real';
+}
+
+let currentSource = initialSource();
+const bucket = () => SOURCES[currentSource].bucket;
 
 // ── Rangos disponibles ────────────────────────────────────────────────────
 const RANGES = [
@@ -76,7 +95,7 @@ async function influxQuery(flux) {
 
 async function queryLast(measurement, field) {
   const csv = await influxQuery(
-    `from(bucket: "${INFLUX.bucket}")
+    `from(bucket: "${bucket()}")
   |> range(start: -1h)
   |> filter(fn: (r) => r._measurement == "${measurement}" and r._field == "${field}")
   |> last()`
@@ -90,7 +109,7 @@ async function queryTimeSeries(measurement, field, range) {
     ? `|> aggregateWindow(every: ${agg}, fn: mean, createEmpty: false)`
     : '';
   const csv = await influxQuery(
-    `from(bucket: "${INFLUX.bucket}")
+    `from(bucket: "${bucket()}")
   |> range(start: ${range})
   |> filter(fn: (r) => r._measurement == "${measurement}" and r._field == "${field}")
   ${aggClause}
@@ -218,6 +237,32 @@ function buildRangeButtons() {
   });
 }
 
+// ── Selector de fuente (Real / Simulación) ────────────────────────────────
+function buildSourceButtons() {
+  const container = document.getElementById('source-filter');
+  if (!container) return;
+  container.innerHTML = Object.entries(SOURCES).map(([key, s]) =>
+    `<button class="tf-btn${key === currentSource ? ' active' : ''}" data-source="${key}" title="bucket ${s.bucket}">${s.label}</button>`
+  ).join('');
+  container.addEventListener('click', function(e) {
+    const btn = e.target.closest('.tf-btn');
+    if (!btn || btn.dataset.source === currentSource) return;
+    currentSource = btn.dataset.source;
+    try { localStorage.setItem('lah-source', currentSource); } catch (_) {}
+    container.querySelectorAll('.tf-btn').forEach(b => b.classList.toggle('active', b === btn));
+    applySourceUI();
+    refreshOverview();
+    refreshCharts();
+  });
+  applySourceUI();
+}
+
+function applySourceUI() {
+  document.body.dataset.source = currentSource;
+  const tag = document.getElementById('source-tag');
+  if (tag) tag.textContent = 'Fuente: ' + SOURCES[currentSource].label + ' · bucket ' + bucket();
+}
+
 function updateRangeTitle() {
   const el = document.getElementById('charts-range-label');
   if (!el) return;
@@ -264,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
     TREND_CHARTS.forEach(initChart);
   }
 
+  buildSourceButtons();
   buildRangeButtons();
   updateRangeTitle();
 
