@@ -28,7 +28,7 @@ import requests
 # ── Config InfluxDB (misma instancia que web/lah/dashboard.js) ────────
 INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
 INFLUX_ORG = "romsreu"
-INFLUX_BUCKET = "LAH-sim"  # bucket de testing; el real (LAH) lo escribe solo la Raspberry
+INFLUX_BUCKET = "LAH-sim"  # bucket de testing; el real (LAH-real) lo escribe solo la Raspberry
 
 STEP_MINUTES = 5
 BATCH_LINES = 5000

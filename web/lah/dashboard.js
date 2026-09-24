@@ -8,8 +8,8 @@ const INFLUX = {
 // ── Fuente de datos (bucket) ──────────────────────────────────────────────
 // real → datos de la Raspberry · sim → datos de testing (tools/simulate_data.py)
 const SOURCES = {
-  real: { bucket: 'LAH',     label: 'Real'       },
-  sim:  { bucket: 'LAH-sim', label: 'Simulación' },
+  real: { bucket: 'LAH-real', label: 'Real'       },
+  sim:  { bucket: 'LAH-sim',  label: 'Simulación' },
 };
 
 function initialSource() {
