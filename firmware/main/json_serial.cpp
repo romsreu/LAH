@@ -13,28 +13,36 @@
 #include "json_serial.h"
 #include "config.h"
 
+// ArduinoJson omite la parte decimal de un float entero (22.0 -> "22"), y del
+// lado de la Raspberry llega como int. Se fuerza siempre notación decimal para
+// que InfluxDB reciba float. Una lectura inválida (NaN del DHT) se envía null.
+static void setFloat(JsonDocument& doc, const char* key, float value, uint8_t dec = 3) {
+  if (isnan(value) || isinf(value)) doc[key] = nullptr;
+  else                              doc[key] = serialized(String(value, dec));
+}
+
 void enviar_json() {
   StaticJsonDocument<JSON_BUFFER_SIZE_VAL> doc;
 
   // Temperaturas y humedades
-  doc["temperatura_interior"]              = temp_value_int;
-  doc["humedad_interior"]                  = hum_value_int;
-  doc["temperatura_exterior"]              = temp_value_ext;
-  doc["humedad_exterior"]                  = hum_value_ext;
-  doc["temperatura_solucion_estante_superior"] = Wtemp1_value;
-  doc["temperatura_solucion_estante_inferior"] = Wtemp0_value;
+  setFloat(doc, "temperatura_interior",              temp_value_int);
+  setFloat(doc, "humedad_interior",                  hum_value_int);
+  setFloat(doc, "temperatura_exterior",              temp_value_ext);
+  setFloat(doc, "humedad_exterior",                  hum_value_ext);
+  setFloat(doc, "temperatura_solucion_estante_superior", Wtemp1_value);
+  setFloat(doc, "temperatura_solucion_estante_inferior", Wtemp0_value);
 
   // pH y CE
-  doc["ph"]                                = pH_value;
-  doc["electroconductividad"]              = EC_value;
+  setFloat(doc, "ph",                                pH_value);
+  setFloat(doc, "electroconductividad",              EC_value);
   doc["intensidad_luz"]                    = LDRvalue;
 
   // Límites de control
-  doc["temperatura_setpoint"]              = limit_temp;
-  doc["ph_setpoint_minimo"]                = pH_low;
-  doc["ph_setpoint_maximo"]                = pH_high;
-  doc["electroconductividad_setpoint_minimo"] = EC_low;
-  doc["electroconductividad_setpoint_maximo"] = EC_high;
+  setFloat(doc, "temperatura_setpoint",              limit_temp);
+  setFloat(doc, "ph_setpoint_minimo",                pH_low);
+  setFloat(doc, "ph_setpoint_maximo",                pH_high);
+  setFloat(doc, "electroconductividad_setpoint_minimo", EC_low);
+  setFloat(doc, "electroconductividad_setpoint_maximo", EC_high);
 
   // Intervalos
   doc["bomba_tanque_principal_tiempo_encendido"] = interval_bomba_on;
