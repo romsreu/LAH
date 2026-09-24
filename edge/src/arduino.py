@@ -48,8 +48,16 @@ class Arduino:
                 return p.device
         return None
 
-    def conectar(self, reintento_seg=10):
-        """Abre el puerto. Reintenta indefinidamente hasta lograrlo."""
+    def conectar(self, reintento_seg=10, aviso_cada_seg=600):
+        """
+        Abre el puerto. Reintenta indefinidamente hasta lograrlo.
+
+        Reintenta cada `reintento_seg`, pero el aviso de "no encontrado" se
+        loguea cada `aviso_cada_seg`: con el Arduino desenchufado toda una
+        noche, un warning cada 10 s llenaba el log de líneas idénticas.
+        """
+        inicio = time.monotonic()
+        ultimo_aviso = None
         while True:
             puerto = self._puerto_fijo or self.detectar_puerto()
 
@@ -63,7 +71,15 @@ class Arduino:
                 except serial.SerialException as e:
                     log.error(f"No se pudo abrir {puerto}: {e}")
 
-            log.warning(f"No se encontró el Arduino. Reintentando en {reintento_seg}s...")
+            ahora = time.monotonic()
+            if ultimo_aviso is None or ahora - ultimo_aviso >= aviso_cada_seg:
+                minutos = (ahora - inicio) / 60
+                log.warning(
+                    f"No se encontró el Arduino (hace {minutos:.0f} min). "
+                    f"Reintentando cada {reintento_seg}s, próximo aviso en "
+                    f"{aviso_cada_seg // 60} min."
+                )
+                ultimo_aviso = ahora
             time.sleep(reintento_seg)
 
     def reconectar(self):

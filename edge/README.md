@@ -1,9 +1,13 @@
 # LAHI 4.0 — edge
 
 Bridge que corre en la Raspberry Pi: le pide lecturas al Arduino Mega por puerto
-serie y las publica en InfluxDB Cloud para el posterior uso de clientes.
+serie y las publica en InfluxDB Cloud, que alimenta los dashboards de Grafana.
 
-<img width="2058" height="764" alt="flujo_de_persistencia" src="https://github.com/user-attachments/assets/9d9f2921-8f64-4b33-ba66-2e141e765fca" />
+```
+Arduino Mega ──serie 9600──> Raspberry Pi ──HTTPS──> InfluxDB Cloud ──> Grafana
+                                   │
+                                   └─ sin internet ─> buffer.db (SQLite)
+```
 
 ## Estructura
 
@@ -103,6 +107,31 @@ coinciden, el parseo tira `KeyError` y **no se sube ninguna lectura**.
 cd /home/romsreu/hydrolab/edge
 PYTHONPATH=src python3 src/main.py
 ```
+
+## El buffer y la retención de InfluxDB
+
+InfluxDB Cloud rechaza con HTTP 400 cualquier escritura cuyo timestamp sea más
+viejo que la retención del bucket (30 días en el free tier). Una lectura que
+estuvo encolada más tiempo que eso **no se puede subir nunca**.
+
+El barrido de la cola empieza siempre por la más vieja, así que reintentar una
+lectura irrecuperable taponaría el buffer de forma permanente. Por eso se
+distinguen dos familias de error:
+
+| Situación | Ejemplos | Qué hace el bridge |
+|---|---|---|
+| Rechazo permanente (400, 422) | timestamp fuera de retención, conflicto de tipo de campo, JSON corrupto | descarta esa lectura y sigue con el resto de la cola |
+| Fallo transitorio (red, timeout, 5xx, 429) | sin internet, proxy caído, InfluxDB con problemas | corta el barrido y reintenta en el próximo ciclo, sin perder nada |
+
+401/403 se tratan como transitorios a propósito: son un error de configuración
+(token vencido o sin permisos) y descartar datos por eso sería perder lecturas
+buenas por algo que se arregla editando el `.env`.
+
+Además, al arrancar el servicio se purgan las lecturas vencidas y se poda el
+buffer a `BUFFER_MAX_FILAS` (20000 por defecto, ~70 días a 300 s por lectura),
+para que un corte largo no llene la tarjeta SD.
+
+Si cambiás el plan de InfluxDB, ajustá `RETENCION_DIAS` en el `.env`.
 
 ## Problemas conocidos del firmware
 

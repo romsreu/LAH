@@ -15,6 +15,7 @@ Se corre como servicio systemd. Ver systemd/hydrolab-edge.service.
 
 import json
 import logging
+import logging.handlers
 import time
 
 import serial
@@ -22,7 +23,7 @@ import serial
 import config
 import buffer
 from arduino import Arduino
-from influx_writer import InfluxWriter, parsear
+from influx_writer import InfluxWriter, parsear, es_rechazo_permanente
 
 log = logging.getLogger("hydrolab")
 
@@ -32,8 +33,14 @@ def configurar_logging():
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         handlers=[
-            logging.FileHandler(config.LOG_FILE),
-            logging.StreamHandler(),
+            # Rotativo: la SD nunca guarda más de LOG_MAX_BYTES × (LOG_BACKUPS + 1).
+            logging.handlers.RotatingFileHandler(
+                config.LOG_FILE,
+                maxBytes=config.LOG_MAX_BYTES,
+                backupCount=config.LOG_BACKUPS,
+                encoding="utf-8",
+            ),
+            logging.StreamHandler(),    # journald (journalctl -u hydrolab-edge)
         ],
     )
 
@@ -42,16 +49,23 @@ def vaciar_pendientes(writer):
     """
     Reenvía los pendientes del buffer, del más viejo al más nuevo.
 
-    Si uno falla corta el barrido y deja el resto para el próximo ciclo: así no
-    se pierde el orden ni se reintenta en loop dentro de un mismo ciclo.
-    Los que vienen corruptos se descartan, porque reintentarlos no los va a arreglar.
+    Una lectura se descarta —no se reintenta— cuando es irrecuperable: JSON
+    corrupto, o rechazo permanente de InfluxDB (timestamp fuera de retención,
+    conflicto de tipos). Reintentarla taponaría la cola indefinidamente, porque
+    el barrido siempre empieza por la más vieja.
+
+    Ante un fallo transitorio (sin red, timeout, 5xx) corta el barrido y deja
+    el resto para el próximo ciclo, sin perder el orden.
     """
+    buffer.purgar_vencidos()      # descarte proactivo: evita pedirle a InfluxDB
+                                  # lo que ya sabemos que va a rechazar
+
     filas = buffer.pendientes()
     if not filas:
         return
 
     log.info(f"{len(filas)} lecturas pendientes en el buffer. Reenviando...")
-    subidos = 0
+    subidos = descartados = 0
 
     for fila_id, raw, ts in filas:
         try:
@@ -59,6 +73,7 @@ def vaciar_pendientes(writer):
         except (json.JSONDecodeError, KeyError) as e:
             log.error(f"Pendiente {fila_id} corrupto, se descarta: {e}")
             buffer.borrar(fila_id)
+            descartados += 1
             continue
 
         try:
@@ -66,11 +81,18 @@ def vaciar_pendientes(writer):
             buffer.borrar(fila_id)
             subidos += 1
         except Exception as e:
+            if es_rechazo_permanente(e):
+                log.error(f"Pendiente {fila_id} rechazado definitivamente, se descarta: {e}")
+                buffer.borrar(fila_id)
+                descartados += 1
+                continue
             log.error(f"No se pudo reenviar el pendiente {fila_id}: {e}")
             break
 
     if subidos:
         log.info(f"Se reenviaron {subidos} lecturas del buffer.")
+    if descartados:
+        log.warning(f"Se descartaron {descartados} lecturas irrecuperables.")
 
 
 def ciclo(ard, writer):
@@ -101,6 +123,12 @@ def ciclo(ard, writer):
         log.info("Lectura enviada a InfluxDB.")
     except Exception as e:
         log.warning(f"No se pudo enviar a InfluxDB: {e}")
+        if es_rechazo_permanente(e):
+            # Solo acá el raw aporta: el servidor rechazó el CONTENIDO, y sin
+            # verlo no se puede saber qué valor lo disparó. En un fallo de red
+            # el dato está bien y volcarlo en cada ciclo solo infla el log.
+            log.error(f"Rechazo de contenido. Raw: {raw}")
+            return      # reintentarla desde el buffer daría el mismo 400
         buffer.guardar(raw, ts)
 
 
@@ -108,9 +136,19 @@ def main():
     configurar_logging()
     buffer.init()
 
+    # Limpieza de arranque: si el servicio estuvo caído mucho tiempo, el buffer
+    # puede tener lecturas ya fuera de la retención de InfluxDB. Sacarlas acá
+    # evita arrancar con una cola taponada.
     pend = buffer.cantidad()
     if pend:
-        log.info(f"Arrancando con {pend} lecturas pendientes del buffer.")
+        viejo, nuevo = buffer.rango()
+        log.info(
+            f"Buffer: {pend} lecturas pendientes "
+            f"({time.strftime('%Y-%m-%d %H:%M', time.localtime(viejo))} → "
+            f"{time.strftime('%Y-%m-%d %H:%M', time.localtime(nuevo))})."
+        )
+        if buffer.purgar_vencidos():
+            log.info(f"Buffer depurado: quedan {buffer.cantidad()} lecturas.")
 
     log.info(f"Pidiendo datos cada {config.INTERVALO_SEGUNDOS}s.")
 

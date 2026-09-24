@@ -13,6 +13,7 @@ quede registrado en el momento en que se midió y no cuando volvió el enlace.
 
 import logging
 import sqlite3
+import time
 
 import config
 
@@ -62,3 +63,42 @@ def borrar(fila_id):
 def cantidad():
     with _conectar() as con:
         return con.execute("SELECT COUNT(*) FROM pendientes").fetchone()[0]
+
+
+def rango():
+    """(ts_mas_viejo, ts_mas_nuevo) o (None, None) si está vacío."""
+    with _conectar() as con:
+        return tuple(con.execute(
+            "SELECT MIN(timestamp), MAX(timestamp) FROM pendientes"
+        ).fetchone())
+
+
+def purgar_vencidos(edad_maxima_seg=None):
+    """
+    Borra las lecturas más viejas que BUFFER_MAX_DIAS. Devuelve cuántas borró.
+
+    InfluxDB rechaza con HTTP 400 cualquier timestamp fuera de la retención del
+    bucket. Esas lecturas no se pueden subir nunca: reintentarlas tapona la cola
+    y no hay forma de recuperarlas. Se descartan.
+    """
+    if edad_maxima_seg is None:
+        edad_maxima_seg = config.BUFFER_MAX_SEG
+
+    corte = time.time() - edad_maxima_seg
+    with _conectar() as con:
+        cur = con.execute("DELETE FROM pendientes WHERE timestamp < ?", (corte,))
+        borradas = cur.rowcount
+
+    if borradas > 0:
+        dias = edad_maxima_seg / 86400
+        log.warning(
+            f"Se descartaron {borradas} lecturas de más de {dias:.0f} días: "
+            f"quedaron fuera de la retención de InfluxDB y no se pueden subir."
+        )
+    return borradas
+
+
+# No hay VACUUM a propósito: el buffer cicla (se llena y se vacía), así que las
+# páginas que libera un DELETE las reutiliza el siguiente INSERT. El archivo se
+# estabiliza en su máximo histórico. Compactar no ganaría espacio y en cambio
+# reescribiría el archivo entero sobre la tarjeta SD, que tiene ciclos contados.

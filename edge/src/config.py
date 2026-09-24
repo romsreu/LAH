@@ -36,7 +36,9 @@ def _requerido(nombre):
 INFLUX_URL    = os.environ.get("INFLUX_URL", "https://us-east-1-1.aws.cloud2.influxdata.com")
 INFLUX_TOKEN  = _requerido("INFLUX_TOKEN")
 INFLUX_ORG    = os.environ.get("INFLUX_ORG", "romsreu")
-INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "hydrolab")
+# Ambientes: "LAH-real" guarda lo que mide el sistema real; "LAH-sim" los datos
+# simulados de tools/simulate_data.py. El bridge escribe siempre en el real.
+INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "LAH-real")
 
 # Proxy saliente. Necesario en la red de la facultad, que bloquea el 443 directo.
 # Vacío = conexión directa.
@@ -53,8 +55,16 @@ INTERVALO_SEGUNDOS = int(os.environ.get("INTERVALO_SEGUNDOS", 300))
 DB_LOCAL = os.environ.get("DB_LOCAL", str(BASE_DIR / "buffer.db"))
 LOG_FILE = os.environ.get("LOG_FILE", str(BASE_DIR / "hydrolab.log"))
 
-# ── Compatibilidad con el firmware ───────────────────────────────────────────
-# json_serial.cpp manda hoy "led_estante_iniferior_estado" (con el typo).
-# Si lo corregís en el firmware, cambiá esta variable a "led_estante_inferior_estado".
-# Si no coinciden, el parseo tira KeyError y NO se sube ningún dato.
-CAMPO_LED_INFERIOR = os.environ.get("CAMPO_LED_INFERIOR", "led_estante_iniferior_estado")
+# Log rotativo: al llegar a LOG_MAX_BYTES se renombra a hydrolab.log.1 (y así
+# hasta LOG_BACKUPS); el más viejo se borra. Default: 5 archivos de 1 MB.
+LOG_MAX_BYTES = int(os.environ.get("LOG_MAX_BYTES", 1_000_000))
+LOG_BACKUPS   = int(os.environ.get("LOG_BACKUPS", 4))
+
+# ── Buffer local ─────────────────────────────────────────────────────────────
+# Una lectura encolada se guarda como máximo BUFFER_MAX_DIAS; pasado ese plazo
+# se descarta. Coincide con la retención del bucket (30 días): InfluxDB rechaza
+# con HTTP 400 todo timestamp más viejo, así que guardarla más no sirve de nada.
+# El plazo también acota el tamaño del buffer en un corte largo (~8600 filas a
+# 300 s por lectura), sin necesidad de un techo de filas aparte.
+BUFFER_MAX_DIAS = int(os.environ.get("BUFFER_MAX_DIAS", 30))
+BUFFER_MAX_SEG  = BUFFER_MAX_DIAS * 24 * 3600
