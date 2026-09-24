@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Backfill de datos simulados para el bucket InfluxDB del LAH.
+"""Backfill de datos simulados para el bucket de testing (LAH-sim) del LAH.
 
 Genera una semana de historial plausible (ciclo diurno + ruido) para las
 variables que consume el dashboard (dashboard.js), y lo escribe al bucket
@@ -7,13 +7,13 @@ real vía la API HTTP de InfluxDB v2 (no requiere el paquete influxdb-client).
 
 El token NUNCA se hardcodea acá: se lee de la variable de entorno
 INFLUX_WRITE_TOKEN. Necesita permiso de ESCRITURA sobre el bucket
-"hydrolab" (el token de dashboard.js es de solo lectura y no sirve).
+"LAH-sim" (el token de dashboard.js es de solo lectura y no sirve).
 
 Uso:
   export INFLUX_WRITE_TOKEN="..."
-  python3 utils/simulate_data.py             # backfill de 7 días
-  python3 utils/simulate_data.py --days 3    # backfill de 3 días
-  python3 utils/simulate_data.py --dry-run   # solo mostrar, no escribir (no requiere token)
+  python3 tools/simulate_data.py             # backfill de 7 días
+  python3 tools/simulate_data.py --days 3    # backfill de 3 días
+  python3 tools/simulate_data.py --dry-run   # solo mostrar, no escribir (no requiere token)
 """
 
 import argparse
@@ -25,10 +25,10 @@ import time
 
 import requests
 
-# ── Config InfluxDB (misma instancia que webpage/page/dashboard.js) ────────
+# ── Config InfluxDB (misma instancia que web/lah/dashboard.js) ────────
 INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
 INFLUX_ORG = "romsreu"
-INFLUX_BUCKET = "hydrolab"
+INFLUX_BUCKET = "LAH-sim"  # bucket de testing; el real (LAH) lo escribe solo la Raspberry
 
 STEP_MINUTES = 5
 BATCH_LINES = 5000
