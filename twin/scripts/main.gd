@@ -1,6 +1,10 @@
 extends Node3D
 
+const LookTecnico = preload("res://scripts/look_tecnico.gd")
+
 func _ready() -> void:
+	# Antes de unir las macetas en MultiMesh, así heredan el material nuevo
+	LookTecnico.aplicar(self)
 	_convert_pots_to_multimesh()
 
 # The 30 pots under PivotArmario/Armario/Pots are identical scene instances,

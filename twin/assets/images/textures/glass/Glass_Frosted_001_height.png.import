@@ -3,23 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b788l07jxdwn0"
-path.s3tc="res://.godot/imported/Glass_Frosted_001_height.png-12b93f80f1fc4e147ab096a44326d159.s3tc.ctex"
-path.etc2="res://.godot/imported/Glass_Frosted_001_height.png-12b93f80f1fc4e147ab096a44326d159.etc2.ctex"
+path="res://.godot/imported/Glass_Frosted_001_height.png-12b93f80f1fc4e147ab096a44326d159.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://assets/images/textures/glass/Glass_Frosted_001_height.png"
-dest_files=["res://.godot/imported/Glass_Frosted_001_height.png-12b93f80f1fc4e147ab096a44326d159.s3tc.ctex", "res://.godot/imported/Glass_Frosted_001_height.png-12b93f80f1fc4e147ab096a44326d159.etc2.ctex"]
+dest_files=["res://.godot/imported/Glass_Frosted_001_height.png-12b93f80f1fc4e147ab096a44326d159.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.8
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

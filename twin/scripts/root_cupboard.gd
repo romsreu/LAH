@@ -6,7 +6,15 @@ extends Node3D
 var deposito_principal_transparente := false
 var mini_depositos_transparentes := false
 
+# Teclas T / Y para ver los depósitos semitransparentes. Desactivado: la
+# simulación se muestra siempre opaca, como el sistema real. Además los
+# materiales de look_tecnico.gd son compartidos entre piezas, así que volver
+# uno transparente afectaría a otras.
+@export var permitir_transparencias := false
+
 func _input(event):
+	if not permitir_transparencias:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		
 		if event.keycode == KEY_T:

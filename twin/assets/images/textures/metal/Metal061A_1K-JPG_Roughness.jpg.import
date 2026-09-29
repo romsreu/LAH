@@ -3,23 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdahx3m4ky3nh"
-path.s3tc="res://.godot/imported/Metal061A_1K-JPG_Roughness.jpg-1c73969c99d09efd358dff0a254dcd72.s3tc.ctex"
-path.etc2="res://.godot/imported/Metal061A_1K-JPG_Roughness.jpg-1c73969c99d09efd358dff0a254dcd72.etc2.ctex"
+path="res://.godot/imported/Metal061A_1K-JPG_Roughness.jpg-1c73969c99d09efd358dff0a254dcd72.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://assets/images/textures/metal/Metal061A_1K-JPG_Roughness.jpg"
-dest_files=["res://.godot/imported/Metal061A_1K-JPG_Roughness.jpg-1c73969c99d09efd358dff0a254dcd72.s3tc.ctex", "res://.godot/imported/Metal061A_1K-JPG_Roughness.jpg-1c73969c99d09efd358dff0a254dcd72.etc2.ctex"]
+dest_files=["res://.godot/imported/Metal061A_1K-JPG_Roughness.jpg-1c73969c99d09efd358dff0a254dcd72.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.8
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
