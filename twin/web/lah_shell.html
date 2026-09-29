@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<title>LAH | Simulación 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Deca:wght@300;500&display=swap" rel="stylesheet">
+<!--
+  Pantalla de carga de la simulación 3D del LAH.
+  Godot la usa como plantilla del export Web (html/custom_html_shell en
+  export_presets.cfg) y al exportar reemplaza sus marcadores (GODOT_URL,
+  GODOT_CONFIG, etc.) por los valores del proyecto.
+  Mismos colores y tipografías que la web (web/lah/styles.css).
+-->
+<style>
+  :root {
+    --bg:    #0f2a26;
+    --deep:  #081612;
+    --leaf:  #43b873;
+    --water: #3aa9cc;
+    --ink:   #e1ece8;
+    --muted: rgba(225,236,232,0.55);
+  }
+
+  html, body, #canvas { margin: 0; padding: 0; border: 0; }
+  html, body { height: 100%; }
+  body {
+    color: var(--ink);
+    background: var(--bg);
+    overflow: hidden;
+    touch-action: none;
+    font-family: 'Inter', sans-serif;
+  }
+  #canvas { display: block; }
+  #canvas:focus { outline: none; }
+
+  /* ── Pantalla de carga ── */
+  #status {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    padding: 1.5rem;
+    text-align: center;
+    background: radial-gradient(120% 90% at 30% 20%, #1b3a31 0%, var(--deep) 70%);
+    z-index: 10;
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.7s;
+  }
+  #status.done { opacity: 0; visibility: hidden; }
+
+  /* Marca: hexágono del logo con una gota que se llena según el progreso */
+  .mark { width: clamp(84px, 16vmin, 128px); height: auto; overflow: visible; }
+  .hex {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    animation: draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards;
+    opacity: 0.9;
+  }
+  .drop-outline { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0.9; }
+  .drop-fill { fill: url(#water); }
+  #level { transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  .wave { animation: wave 2.4s linear infinite; }
+  .ring {
+    fill: none;
+    stroke: var(--water);
+    stroke-width: 1.2;
+    opacity: 0;
+    transform-origin: 50px 56px;
+    animation: ripple 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+  .ring:nth-of-type(2) { animation-delay: 1.3s; }
+
+  @keyframes draw   { to { stroke-dashoffset: 0; } }
+  @keyframes wave   { to { transform: translateX(-40px); } }
+  @keyframes ripple {
+    0%   { opacity: 0.55; transform: scale(0.55); }
+    100% { opacity: 0;    transform: scale(1.35); }
+  }
+
+  .brand { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+  .brand h1 {
+    margin: 0;
+    font-family: 'Lexend Deca', sans-serif;
+    font-weight: 500;
+    font-size: clamp(2.4rem, 7vmin, 3.6rem);
+    letter-spacing: 0.08em;
+    line-height: 1;
+    padding-left: 0.08em; /* compensa el tracking para centrar */
+  }
+  .brand p {
+    margin: 0;
+    font-family: 'Lexend Deca', sans-serif;
+    font-weight: 300;
+    font-size: clamp(0.8rem, 2.2vmin, 0.98rem);
+    color: var(--muted);
+  }
+  .rise { opacity: 0; transform: translateY(10px); animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .rise.d1 { animation-delay: 0.35s; }
+  .rise.d2 { animation-delay: 0.5s; }
+  .rise.d3 { animation-delay: 0.7s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* Barra de progreso */
+  .progress { width: min(240px, 70vw); display: flex; flex-direction: column; gap: 0.55rem; }
+  .track {
+    position: relative;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(225,236,232,0.12);
+    overflow: hidden;
+  }
+  .bar {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--water), var(--leaf));
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Sin tamaño total conocido: barra indeterminada */
+  .track.indeterminate .bar {
+    transform: none;
+    width: 35%;
+    animation: slide 1.3s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
+  .label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Error */
+  #status-notice {
+    display: none;
+    max-width: 30rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--ink);
+    background: rgba(200,69,47,0.14);
+    border: 1px solid rgba(200,69,47,0.45);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+  }
+  #status.error .progress { display: none; }
+  #status.error #status-notice { display: block; }
+  #status.error .ring, #status.error .wave { animation: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+$GODOT_HEAD_INCLUDE
+</head>
+<body>
+<canvas id="canvas">Tu navegador no soporta canvas.</canvas>
+<noscript>Para ver la simulación 3D hace falta habilitar JavaScript.</noscript>
+
+<div id="status" role="status" aria-live="polite">
+  <svg class="mark" viewBox="0 0 100 112" aria-hidden="true">
+    <defs>
+      <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3aa9cc"/>
+        <stop offset="1" stop-color="#43b873"/>
+      </linearGradient>
+      <!-- forma de la gota -->
+      <path id="drop" d="M50 30 C50 30 32 52 32 64 a18 18 0 0 0 36 0 C68 52 50 30 50 30 Z"/>
+      <!-- el trazo va repetido acá: Safari no respeta <use> dentro de clipPath -->
+      <clipPath id="drop-clip"><path d="M50 30 C50 30 32 52 32 64 a18 18 0 0 0 36 0 C68 52 50 30 50 30 Z"/></clipPath>
+    </defs>
+    <circle class="ring" cx="50" cy="56" r="40"/>
+    <circle class="ring" cx="50" cy="56" r="40"/>
+    <!-- hexágono del logo -->
+    <path class="hex" d="M50 6 L93 31 L93 81 L50 106 L7 81 L7 31 Z"/>
+    <!-- agua: sube de abajo hacia arriba según el progreso -->
+    <g clip-path="url(#drop-clip)">
+      <g id="level" style="transform: translateY(52px)">
+        <path class="drop-fill wave" d="M0 30 Q10 26 20 30 T40 30 T60 30 T80 30 T100 30 T120 30 T140 30 L140 90 L0 90 Z"/>
+      </g>
+    </g>
+    <use class="drop-outline" href="#drop"/>
+  </svg>
+
+  <div class="brand">
+    <h1 class="rise d1">LAH</h1>
+    <p class="rise d2">Universidad Tecnológica Nacional</p>
+  </div>
+
+  <div class="progress rise d3">
+    <div class="track indeterminate" id="track"><div class="bar" id="bar"></div></div>
+    <div class="label"><span id="phase">Cargando simulación 3D</span><span id="pct"></span></div>
+  </div>
+
+  <div id="status-notice"></div>
+</div>
+
+<script src="$GODOT_URL"></script>
+<script>
+const GODOT_CONFIG = $GODOT_CONFIG;
+const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
+const engine = new Engine(GODOT_CONFIG);
+
+(function () {
+  const status = document.getElementById('status');
+  const track  = document.getElementById('track');
+  const bar    = document.getElementById('bar');
+  const pct    = document.getElementById('pct');
+  const phase  = document.getElementById('phase');
+  const level  = document.getElementById('level');
+  const notice = document.getElementById('status-notice');
+
+  // La gota ocupa de y=30 a y=82 en el SVG: 52px de recorrido
+  function setProgress(ratio) {
+    const r = Math.max(0, Math.min(1, ratio));
+    track.classList.remove('indeterminate');
+    bar.style.transform = 'scaleX(' + r + ')';
+    level.style.transform = 'translateY(' + (52 - 52 * r) + 'px)';
+    pct.textContent = Math.round(r * 100) + ' %';
+    if (r >= 1) phase.textContent = 'Iniciando';
+  }
+
+  function fail(message) {
+    status.classList.add('error');
+    notice.textContent = message;
+  }
+
+  const missing = Engine.getMissingFeatures({ threads: GODOT_THREADS_ENABLED });
+  if (missing.length !== 0) {
+    fail('Tu navegador no puede mostrar la simulación 3D. Probá con una versión actual de Chrome, Firefox, Edge o Safari. Falta: ' + missing.join(', ') + '.');
+    return;
+  }
+
+  engine.startGame({
+    onProgress: function (current, total) {
+      if (current > 0 && total > 0) {
+        setProgress(current / total);
+      } else {
+        track.classList.add('indeterminate');
+        pct.textContent = '';
+      }
+    },
+  }).then(function () {
+    setProgress(1);
+    status.classList.add('done');
+  }, function (err) {
+    console.error(err);
+    fail('No se pudo cargar la simulación 3D. Revisá tu conexión y recargá la página.');
+  });
+}());
+</script>
+</body>
+</html>

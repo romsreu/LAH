@@ -16,6 +16,8 @@ Permite la visualizacion de estado en tiempo real, datos y control remoto del si
 run/main_scene="uid://dp5w7hcf00ryq"
 config/features=PackedStringArray("4.6", "Mobile")
 run/max_fps=60
+boot_splash/bg_color=Color(0.05882353, 0.16470589, 0.14901961, 1)
+boot_splash/show_image=false
 config/icon="uid://bbjs5epms58l2"
 
 [display]
