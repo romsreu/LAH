@@ -3,11 +3,8 @@
 Bridge que corre en la Raspberry Pi: le pide lecturas al Arduino Mega por puerto
 serie y las publica en InfluxDB Cloud, que alimenta los dashboards de Grafana.
 
-```
-Arduino Mega ──serie 9600──> Raspberry Pi ──HTTPS──> InfluxDB Cloud ──> Grafana
-                                   │
-                                   └─ sin internet ─> buffer.db (SQLite)
-```
+<img width="2058" height="764" alt="arquitectura_envio_de_datos" src="https://github.com/user-attachments/assets/0f5e732d-a61a-409e-9ef0-809e6e6405c0" />
+
 
 ## Estructura
 
