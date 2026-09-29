@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>LAHI 4.0</title>
+<title>LAH | Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
 <style>
   .app.dash-app { grid-template-columns: 1fr; }
@@ -17,211 +18,546 @@
     grid-row: 2;
     overflow-y: auto;
     background: var(--bg);
-    padding: 2.5rem 2rem;
+    padding: 2.25rem clamp(1rem, 3vw, 2.5rem) 3rem;
   }
-  .dash-main::-webkit-scrollbar { width: 4px; }
+  .dash-main::-webkit-scrollbar { width: 6px; }
   .dash-main::-webkit-scrollbar-track { background: transparent; }
-  .dash-main::-webkit-scrollbar-thumb { background: var(--fog); border-radius: 2px; }
+  .dash-main::-webkit-scrollbar-thumb { background: var(--fog); border-radius: 3px; }
+  .dash-inner { max-width: 1400px; margin: 0 auto; }
+
+  /* ── Encabezado de página ── */
+  .dash-hero {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .dash-hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--soil);
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+    font-size: 0.74rem;
+    color: var(--bark);
+    font-variant-numeric: tabular-nums;
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--sand);
+    transition: background 0.3s;
+  }
+  .live.on .live-dot { background: var(--moss); animation: ping-moss 2s var(--ease-out) infinite; }
+  .live.off .live-dot { background: var(--rust); }
+  @keyframes ping-moss {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--moss) 60%, transparent); }
+    80%, 100% { box-shadow: 0 0 0 8px transparent; }
+  }
+  .hero-actions { margin-left: auto; display: flex; gap: 0.5rem; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    font-weight: 500;
+    padding: 0.55rem 0.95rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--fog);
+    background: var(--panel);
+    color: var(--soil);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, background 0.2s, transform 0.25s var(--ease-spring), box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--sage); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn:active { transform: scale(0.97); }
+  .btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-primary { background: var(--soil); color: var(--panel); border-color: var(--soil); }
+  .btn-primary:hover { border-color: var(--soil); }
 
   /* ── Sección ── */
-  .dash-section { margin-bottom: 3rem; }
-
+  .dash-section { margin-bottom: 2.75rem; }
   .dash-section-header {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    align-items: baseline;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--fog);
+    margin-bottom: 1rem;
   }
   .dash-section-title {
     font-family: var(--serif);
-    font-style: italic;
-    font-size: 1.45rem;
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     color: var(--soil);
-    font-weight: 300;
   }
-  .dash-section-title span {
-    font-size: 1rem;
+  .dash-section-sub { font-size: 0.76rem; color: var(--sand); }
+
+  /* ── Tarjetas comunes (stats y gráficas) ── */
+  .card {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--fog);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s var(--ease-out), border-color 0.3s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card-tools {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin: -0.35rem -0.45rem 0 auto;
+  }
+  .card:hover .card-tools, .card:focus-within .card-tools { opacity: 1; }
+  @media (hover: none) { .card-tools { opacity: 1; } }
+  .tool-btn {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border: none;
+    background: transparent;
+    color: var(--sand);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .tool-btn:hover { background: var(--hover); color: var(--soil); }
+  .tool-btn.drag-handle { cursor: grab; touch-action: none; }
+  .tool-btn.drag-handle:active { cursor: grabbing; }
+  .tool-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tool-btn .dots { fill: currentColor; stroke: none; }
+
+  /* estados de arrastre (SortableJS, modo swap) */
+  .card.sortable-ghost { opacity: 0.35; }
+  .card.sortable-chosen { box-shadow: var(--shadow-lg); }
+  .card.swap-target {
+    border-color: var(--water);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--water) 25%, transparent), var(--shadow-md);
+  }
+  .card.is-leaving { animation: leave 0.28s var(--ease-out) forwards; pointer-events: none; }
+  .card.is-entering { animation: enter 0.5s var(--ease-spring) both; }
+  @keyframes leave { to { opacity: 0; transform: scale(0.92); } }
+  @keyframes enter { from { opacity: 0; transform: scale(0.94); } }
+
+  .empty-note {
+    grid-column: 1 / -1;
+    border: 1.5px dashed var(--fog);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.8rem;
     color: var(--sand);
   }
-  .dash-updated {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    font-weight: 600;
-    color: var(--soil);
-    letter-spacing: 0.04em;
-    margin-left: auto;
-    white-space: nowrap;
-  }
+  .empty-note button { font: inherit; color: var(--water); background: none; border: none; cursor: pointer; text-decoration: underline; }
 
   /* ── Stat panels ── */
   .db-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.85rem;
   }
   .db-stat {
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem 1.1rem;
+    --accent: var(--moss);
+    padding: 1rem 1.15rem 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 0.6rem;
-    min-height: 110px;
-    transition: background 0.5s;
-    background: var(--fog);
+    gap: 0.9rem;
+    min-height: 132px;
+    overflow: hidden;
   }
-  .db-stat[data-status="ok"]    { background: #3fa83c; }
-  .db-stat[data-status="warn"]  { background: #c49a0a; }
-  .db-stat[data-status="alert"] { background: #c0392b; }
-
+  /* banda de color de la variable: la misma que usa su gráfica */
+  .db-stat::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0.85;
+  }
+  .db-stat-head { display: flex; align-items: flex-start; gap: 0.5rem; }
   .db-stat-label {
-    font-family: var(--mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--sand);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--bark);
+    line-height: 1.3;
   }
-  .db-stat[data-status="ok"] .db-stat-label,
-  .db-stat[data-status="warn"] .db-stat-label,
-  .db-stat[data-status="alert"] .db-stat-label { color: rgba(255,255,255,0.75); }
+  .db-stat-body { display: flex; align-items: baseline; gap: 0.35rem; line-height: 1; margin-top: auto; }
+  .db-stat-num {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    color: var(--soil);
+    font-variant-numeric: tabular-nums;
+  }
+  .db-stat-unit { font-size: 0.85rem; color: var(--sand); font-weight: 500; }
+  .db-stat-foot { display: flex; align-items: center; gap: 0.4rem; font-size: 0.68rem; color: var(--sand); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fog); transition: background 0.4s; }
+  .db-stat[data-status="ok"]    .status-dot { background: var(--moss); }
+  .db-stat[data-status="warn"]  .status-dot { background: var(--amber); }
+  .db-stat[data-status="alert"] .status-dot { background: var(--rust); }
+  .db-stat.flash .status-dot { animation: ping-moss 0.9s var(--ease-out); }
+  .db-stat[data-status="loading"] .db-stat-num { color: var(--fog); }
 
-  .db-stat-body { display: flex; align-items: baseline; gap: 0.3rem; line-height: 1; }
-  .db-stat-num { font-family: var(--serif); font-size: 2.5rem; font-weight: 300; color: var(--bark); }
-  .db-stat[data-status="ok"] .db-stat-num,
-  .db-stat[data-status="warn"] .db-stat-num,
-  .db-stat[data-status="alert"] .db-stat-num { color: #fff; }
-  .db-stat-unit { font-family: var(--mono); font-size: 0.82rem; color: var(--sand); }
-  .db-stat[data-status="ok"] .db-stat-unit,
-  .db-stat[data-status="warn"] .db-stat-unit,
-  .db-stat[data-status="alert"] .db-stat-unit { color: rgba(255,255,255,0.8); }
-
-  /* ── Time filter ── */
-  .tf-row {
-    display: flex;
+  /* ── Selector de rango: canal de agua ── */
+  .range-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 0.4rem;
-    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    padding: 1.1rem 1.4rem 1.4rem;
+    margin-bottom: 0.85rem;
   }
-  .tf-label {
-    font-family: var(--mono);
-    font-size: 0.56rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--sand);
-    margin-right: 0.25rem;
+  .range-readout { min-width: 8.5rem; }
+  .range-readout b {
+    display: block;
+    font-family: var(--serif);
+    font-size: 1.9rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    color: var(--soil);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
   }
-  .tf-btn {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.3rem 0.7rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--fog);
+  .range-readout span { font-size: 0.72rem; color: var(--sand); }
+
+  .range-field { position: relative; padding-top: 1.9rem; }
+  .range-bubble {
+    position: absolute;
+    top: 0;
+    left: var(--thumb-x, 0);
+    transform: translateX(-50%) translateY(4px) scale(0.9);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--water);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.3s var(--ease-spring);
+    font-variant-numeric: tabular-nums;
+  }
+  .range-field.active .range-bubble { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+
+  .range {
+    --p: 0%;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 22px;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 10px;
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, var(--water), var(--moss)) 0 0 / var(--p) 100% no-repeat,
+      var(--panel-2);
+    box-shadow: inset 0 1px 2px rgba(15,42,38,0.14);
+  }
+  .range::-moz-range-track {
+    height: 10px; border-radius: 999px; background: var(--panel-2);
+    box-shadow: inset 0 1px 2px rgba(15,42,38,0.14);
+  }
+  .range::-moz-range-progress {
+    height: 10px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--water), var(--moss));
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    margin-top: -6px;
+    border-radius: 50%;
     background: var(--panel);
+    border: 3px solid var(--moss);
+    box-shadow: 0 3px 10px -2px rgba(15,42,38,0.35);
+    transition: transform 0.25s var(--ease-spring), box-shadow 0.2s;
+  }
+  .range::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 3px solid var(--moss);
+    box-shadow: 0 3px 10px -2px rgba(15,42,38,0.35);
+    transition: transform 0.25s var(--ease-spring);
+  }
+  .range:hover::-webkit-slider-thumb, .range:focus-visible::-webkit-slider-thumb { transform: scale(1.15); }
+  .range:active::-webkit-slider-thumb { transform: scale(1.25); box-shadow: 0 0 0 8px color-mix(in srgb, var(--moss) 18%, transparent); }
+  .range:hover::-moz-range-thumb, .range:active::-moz-range-thumb { transform: scale(1.2); }
+  .range:focus-visible { outline: none; }
+  .range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px color-mix(in srgb, var(--water) 35%, transparent); }
+
+  .range-ticks { position: relative; height: 1.1rem; margin: 0.45rem 11px 0; }
+  .range-ticks span {
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.66rem;
     color: var(--sand);
+    font-variant-numeric: tabular-nums;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    transition: color 0.2s;
   }
-  .tf-btn:hover { border-color: var(--moss); color: var(--moss); }
-  .tf-btn.active { background: var(--moss); color: #fff; border-color: var(--moss); }
-
-  /* ── Fuente de datos: en simulación se marca en ámbar para no confundir ── */
-  #source-filter .tf-btn[data-source="sim"].active { background: #d98c1f; border-color: #d98c1f; }
-  body[data-source="sim"] .dash-main { box-shadow: inset 0 3px 0 #d98c1f; }
-
-  /* ── PDF button ── */
-  .pdf-btn {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    padding: 0.35rem 0.9rem;
-    border-radius: var(--radius);
-    border: 1px solid rgba(255,255,255,0.15);
-    background: var(--chrome);
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+  .range-ticks span:hover { color: var(--soil); }
+  .range-ticks span.on { color: var(--soil); font-weight: 600; }
+  .range-hint { grid-column: 1 / -1; font-size: 0.7rem; color: var(--sand); }
+  .hint-touch { display: none; }
+  @media (hover: none) and (pointer: coarse) {
+    .hint-mouse { display: none; }
+    .hint-touch { display: inline; }
   }
-  .pdf-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
-  .pdf-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; }
 
   /* ── Charts ── */
   .chart-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
   }
-  .chart-card {
-    background: var(--panel);
-    border-radius: var(--radius);
+  .chart-card { padding: 1rem 1.2rem 1.1rem; }
+  .chart-head { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.2rem; }
+  .chart-title { display: flex; align-items: center; gap: 0.5rem; font-size: 0.86rem; font-weight: 500; color: var(--soil); }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .chart-stats {
+    display: flex; gap: 1rem;
+    font-size: 0.7rem; color: var(--sand);
+    font-variant-numeric: tabular-nums;
+    margin: 0.15rem 0 0.7rem 1.1rem;
+    min-height: 1em;
+  }
+  .chart-stats b { color: var(--bark); font-weight: 600; }
+  .chart-wrap { position: relative; height: 210px; }
+  .chart-empty {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    font-size: 0.76rem; color: var(--sand);
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .chart-card.no-data .chart-empty { opacity: 1; }
+  .zoom-reset {
+    position: absolute; top: 6px; right: 6px;
+    font: 500 0.68rem var(--sans);
+    padding: 0.28rem 0.6rem;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--fog);
-    padding: 1rem 1.25rem 1.25rem;
-  }
-  .chart-card-label {
-    font-family: var(--mono);
-    font-size: 0.58rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    background: var(--panel);
     color: var(--soil);
-    display: block;
-    margin-bottom: 0.75rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    opacity: 0; transform: translateY(-4px) scale(0.95);
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.3s var(--ease-spring);
   }
-  .chart-wrap { position: relative; height: 180px; }
+  .chart-card.zoomed .zoom-reset { opacity: 1; transform: none; pointer-events: auto; }
 
-  /* ── Print header (oculto en pantalla) ── */
-  .print-header { display: none; }
+  /* ── Panel de personalización ──
+     Capa fija que recorta: el panel cerrado queda fuera de la pantalla a la
+     derecha y, sin este recorte, los navegadores móviles habilitan scroll
+     horizontal hacia él. */
+  .drawer-layer {
+    position: fixed; inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 200; /* por encima de la barra superior sticky en móvil */
+  }
+  .scrim {
+    position: absolute; inset: 0;
+    background: rgba(4,12,10,0.4);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s var(--ease-out);
+  }
+  .drawer {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: min(380px, 100%);
+    background: var(--panel);
+    border-left: 1px solid var(--fog);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.45s var(--ease-out), visibility 0s linear 0.45s;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+    pointer-events: auto;
+  }
+  body.drawer-open .scrim { opacity: 1; pointer-events: auto; }
+  body.drawer-open .drawer { transform: none; visibility: visible; transition: transform 0.45s var(--ease-out), visibility 0s; }
+  .drawer-head { display: flex; align-items: center; padding: 1.25rem 1.25rem 0.5rem; }
+  .drawer-head h2 { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; }
+  .drawer-head .tool-btn { margin-left: auto; }
+  .drawer-body { flex: 1; overflow-y: auto; padding: 0.25rem 1.25rem 1rem; }
+  .drawer-body p.help { font-size: 0.74rem; color: var(--bark); line-height: 1.6; margin-bottom: 1rem; }
+  .drawer-group h3 { font-size: 0.78rem; font-weight: 600; color: var(--soil); margin: 1rem 0 0.4rem; display: flex; }
+  .drawer-group h3 span { margin-left: auto; font-weight: 400; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .toggle-row {
+    display: flex; align-items: center; gap: 0.65rem;
+    padding: 0.55rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem; color: var(--soil);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .toggle-row:hover { background: var(--hover); }
+  .switch { margin-left: auto; position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+  .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .switch i {
+    position: absolute; inset: 0; border-radius: 999px;
+    background: var(--fog);
+    transition: background 0.25s;
+    pointer-events: none;
+  }
+  .switch i::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    transition: transform 0.35s var(--ease-spring);
+  }
+  .switch input:checked + i { background: var(--moss); }
+  .switch input:checked + i::after { transform: translateX(16px); }
+  .switch input:focus-visible + i { outline: 2px solid var(--water); outline-offset: 2px; }
+  .drawer-foot { padding: 1rem 1.25rem; border-top: 1px solid var(--fog); display: flex; gap: 0.5rem; }
 
-  /* ── Print / PDF ── */
+  /* ── Reporte PDF ──
+     Al imprimir se arman hojas A4 reales (.print-page, 210 × 297 mm) y se
+     reparten las tarjetas midiendo lo que entra en cada una; así el pie
+     oscuro queda siempre pegado al borde inferior de cada hoja. Encabezado y
+     pie usan el mismo tono que la barra superior y el pie del sitio. */
+  @page { size: A4 portrait; margin: 0; }
+
+  .print-pages { display: none; }
+  body.print-prep .dash-inner { display: none; }
+  body.print-prep .print-pages { display: block; }
+
+  .print-page {
+    width: 210mm;
+    height: 297mm;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    color: var(--soil);
+    font-size: 10pt;
+    break-after: page;
+  }
+  .print-page:last-child { break-after: auto; }
+  .pp-body { flex: 1; min-height: 0; overflow: hidden; padding: 12mm 14mm 6mm; }
+  .print-page:first-child .pp-body { padding-top: 0; }
+
+  .print-page .dash-section { margin-bottom: 7mm; }
+  .print-page .dash-section-header { margin-bottom: 3mm; }
+  .print-page .dash-section-title { font-size: 13pt; }
+  .print-page .dash-section-sub { font-size: 9pt; }
+  .print-page .db-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2.5mm; }
+  .print-page .chart-grid { grid-template-columns: minmax(0, 1fr); gap: 4mm; }
+  .print-page .chart-wrap { height: 50mm; }
+  .print-page .card { box-shadow: none; border: 0.25mm solid #d3dedb; border-radius: 2.5mm; }
+  .print-page .card-tools, .print-page .zoom-reset, .print-page .chart-empty { display: none; }
+  .print-page .reveal, .print-page .is-entering { animation: none; }
+  .print-page .db-stat { min-height: 0; padding: 3mm 3.5mm; gap: 2mm; }
+  .print-page .db-stat-label { font-size: 8pt; }
+  .print-page .db-stat-num { font-size: 17pt; }
+  .print-page .db-stat-unit { font-size: 8pt; }
+  .print-page .db-stat-foot { display: none; }
+  .print-page .chart-card { padding: 3.5mm 4.5mm 3mm; }
+  .print-page .chart-title { font-size: 10pt; }
+  .print-page .chart-stats { font-size: 8pt; margin-bottom: 2mm; }
+
+  .ph-logos { display: flex; align-items: center; gap: 5mm; }
+  .ph-logos img { width: auto; object-fit: contain; }
+  .ph-utn   { height: 8mm; filter: brightness(0) invert(1); opacity: 0.8; }
+  .ph-giedi { height: 13mm; margin: 0 -1.2mm; }
+  .ph-gitda { height: 8.5mm; }
+
+  /* encabezado oscuro (primera hoja) */
+  .print-header {
+    margin: 0 -14mm 7mm;
+    padding: 9mm 14mm 6mm;
+    background: var(--chrome);
+    color: #fff;
+    border-bottom: 1mm solid var(--moss);
+  }
+  .ph-top { display: flex; align-items: center; gap: 4mm; }
+  .ph-icon { height: 12mm; width: auto; mix-blend-mode: screen; }
+  .ph-title { flex: 1; }
+  .ph-title p { font-size: 8.5pt; color: rgba(255,255,255,0.6); }
+  .ph-title h1 {
+    font-family: var(--serif);
+    font-size: 21pt;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-top: 1mm;
+  }
+  .ph-meta {
+    display: flex;
+    gap: 10mm;
+    margin-top: 5mm;
+    padding-top: 4mm;
+    border-top: 0.25mm solid rgba(255,255,255,0.15);
+  }
+  .ph-meta dt { font-size: 7.5pt; color: rgba(255,255,255,0.5); }
+  .ph-meta dd { font-size: 9.5pt; font-weight: 500; color: #fff; margin-top: 0.5mm; }
+
+  /* pie oscuro, igual al del sitio, al fondo de cada hoja */
+  .print-footer {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6mm;
+    height: 20mm;
+    padding: 0 14mm;
+    background: var(--chrome);
+  }
+  .print-footer p { font-size: 7.5pt; color: rgba(255,255,255,0.5); line-height: 1.5; padding-left: 6mm; border-left: 0.25mm solid rgba(255,255,255,0.15); }
+  .print-footer p strong { display: block; color: rgba(255,255,255,0.85); font-weight: 500; }
+  .print-footer > span { margin-left: auto; font-size: 8pt; color: rgba(255,255,255,0.6); }
+  .print-footer .ph-giedi { height: 10mm; }
+  .print-footer .ph-utn { height: 6.5mm; }
+  .print-footer .ph-gitda { height: 6.5mm; }
+
   @media print {
-    .topbar, .page-footer, .tf-row, .pdf-btn,
-    .dash-section-header .dash-updated { display: none !important; }
-
-    html, body { overflow: visible !important; height: auto !important; }
+    .topbar, .page-footer, .drawer-layer { display: none !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    html, body { overflow: visible !important; height: auto !important; background: #fff !important; }
     .app.dash-app { display: block !important; height: auto !important; overflow: visible !important; }
-    .dash-main { overflow: visible !important; padding: 1rem !important; }
-
-    .print-header {
-      display: block !important;
-      margin-bottom: 1.5rem;
-      border-bottom: 2px solid #1e1a14;
-      padding-bottom: 0.75rem;
-    }
-    .print-header h1 { font-size: 1.2rem; font-weight: 600; }
-    .print-header p  { font-size: 0.75rem; color: #666; margin-top: 0.25rem; }
-
-    .db-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 0.5rem !important; }
-    .db-stat  { min-height: 80px !important; padding: 0.6rem 0.8rem !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .db-stat-num { font-size: 1.8rem !important; }
-
-    .chart-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem !important; break-inside: avoid; }
-    .chart-wrap { height: 200px !important; }
-    .chart-card { break-inside: avoid; border: 1px solid #ccc !important; }
-
-    .dash-section { break-inside: avoid; margin-bottom: 1.5rem !important; }
-    .dash-section-header { margin-bottom: 0.75rem !important; }
+    .dash-main { overflow: visible !important; padding: 0 !important; background: #fff !important; }
   }
 
   /* ── Responsive ── */
-  @media (max-width: 1024px) {
-    .db-grid { grid-template-columns: repeat(2, 1fr); }
-    .chart-grid { grid-template-columns: 1fr; }
+  @media (max-width: 1100px) {
+    .db-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .chart-grid { grid-template-columns: minmax(0, 1fr); }
   }
   @media (max-width: 768px) {
-    .dash-main { padding: 1.5rem 1rem; }
-    .dash-updated { display: none; }
+    /* en móvil scrollea la página entera, no el main */
+    .dash-main { overflow: visible; min-width: 0; }
   }
-  @media (max-width: 480px) {
-    .db-grid { grid-template-columns: 1fr; }
+  @media (max-width: 640px) {
+    .dash-main { padding: 1.5rem 1rem 2rem; }
+    .range-card { grid-template-columns: 1fr; padding: 1rem 1rem 1.2rem; }
+    .hero-actions { margin-left: 0; width: 100%; }
+    .hero-actions .btn { flex: 1; justify-content: center; }
+    .db-stat-num { font-size: 2.1rem; }
+  }
+  @media (max-width: 420px) {
+    .db-grid { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 </head>
@@ -230,14 +566,15 @@
 
   <!-- ══ TOPBAR ══ -->
   <header class="topbar">
-    <a class="topbar-home-link" href="./"><img class="topbar-icon" src="icon.png" alt="Inicio"></a>
+    <a class="topbar-home-link" href="./"><img class="topbar-icon" src="icon-mark.png" alt="Inicio"></a>
     <span class="topbar-brand">
       Laboratorio Autocontenido Hidropónico de Industria 4.0
     </span>
-    <div class="topbar-sep"></div>
-    <span class="topbar-desc">Dashboard</span>
-    <a class="topbar-dashboard-btn" href="./">← Visualizador</a>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar modo">
+    <nav class="topnav" aria-label="Secciones">
+      <a href="./">Visualizador 3D</a>
+      <a class="active" href="dashboard.html" aria-current="page">Dashboard</a>
+    </nav>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar modo claro/oscuro">
       <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
       <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
@@ -245,45 +582,58 @@
 
   <!-- ══ MAIN CONTENT ══ -->
   <main class="dash-main">
+    <div class="dash-inner">
 
-    <!-- Header de impresión (oculto en pantalla) -->
-    <div class="print-header">
-      <h1>LAHI 4.0 — Reporte de monitoreo</h1>
-      <p id="print-date"></p>
-      <p class="source-tag" id="source-tag"></p>
-    </div>
-
-    <!-- ── RESUMEN GENERAL ── -->
-    <div class="dash-section">
-      <div class="dash-section-header">
-        <h2 class="dash-section-title">Resumen general</h2>
-        <div class="tf-row">
-          <span class="tf-label">Fuente</span>
-          <div id="source-filter"></div>
+      <div class="dash-hero reveal" style="--i:0">
+        <div>
+          <h1>Estado del cultivo</h1>
+          <div class="live" id="live"><span class="live-dot"></span><span id="db-updated">Conectando con el sistema…</span></div>
         </div>
-        <span class="dash-updated" id="db-updated">Cargando…</span>
-      </div>
-      <div class="db-grid" id="overview-grid"></div>
-    </div>
-
-    <!-- ── GRÁFICAS ── -->
-    <div class="dash-section">
-      <div class="dash-section-header">
-        <h2 class="dash-section-title">
-          Gráficas — <span id="charts-range-label"></span>
-        </h2>
-        <div class="tf-row">
-          <span class="tf-label">Rango</span>
-          <div id="range-filter"></div>
+        <div class="hero-actions">
+          <button class="btn" id="customize-btn" aria-controls="drawer">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="var(--panel)"/><circle cx="15" cy="12" r="2" fill="var(--panel)"/><circle cx="7" cy="18" r="2" fill="var(--panel)"/></svg>
+            Personalizar
+          </button>
+          <button class="btn btn-primary" id="pdf-btn">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar PDF
+          </button>
         </div>
-        <button class="pdf-btn" id="pdf-btn">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Descargar PDF
-        </button>
       </div>
-      <div class="chart-grid" id="chart-grid"></div>
-    </div>
 
+      <!-- ── RESUMEN GENERAL ── -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Lecturas actuales</h2>
+        </div>
+        <div class="db-grid" id="overview-grid"></div>
+      </section>
+
+      <!-- ── GRÁFICAS ── -->
+      <section class="dash-section">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">Tendencias</h2>
+          <span class="dash-section-sub" id="charts-range-label"></span>
+        </div>
+
+        <div class="card range-card reveal" style="--i:6">
+          <div class="range-readout">
+            <b id="range-value">7 días</b>
+            <span>de historial</span>
+          </div>
+          <div class="range-field" id="range-field">
+            <output class="range-bubble" id="range-bubble" for="range"></output>
+            <input class="range" id="range" type="range" min="1" max="30" step="1" value="7" aria-label="Días de historial a mostrar">
+            <div class="range-ticks" id="range-ticks"></div>
+          </div>
+          <p class="range-hint"><span class="hint-mouse">Para ver el detalle por horas, arrastrá sobre una gráfica para ampliar ese tramo. Con Ctrl + rueda también se amplía.</span><span class="hint-touch">Para ver el detalle por horas, pellizcá una gráfica para ampliarla.</span></p>
+        </div>
+
+        <div class="chart-grid" id="chart-grid"></div>
+      </section>
+
+    </div>
+    <div class="print-pages" id="print-pages"></div>
   </main>
 
   <!-- ══ PAGE FOOTER ══ -->
@@ -291,6 +641,7 @@
     <div class="footer-logos">
       <img class="footer-logo footer-logo-utn" src="logo-utn.png" alt="UTN" title="Universidad Tecnológica Nacional">
       <img class="footer-logo footer-logo-giedii" src="logo-giedi.png" alt="GIEDI" title="GIEDI">
+      <img class="footer-logo footer-logo-gitda" src="logo_gitda.png" alt="GITDA" title="GITDA">
     </div>
     <div class="footer-sep"></div>
     <p class="footer-text">
@@ -301,7 +652,72 @@
 
 </div>
 
+<!-- ══ PLANTILLAS DEL REPORTE PDF ══
+     Al imprimir, dashboard.js arma hojas A4 con estas piezas (ver buildPrintPages). -->
+<template id="tpl-print-header">
+      <header class="print-header">
+        <div class="ph-top">
+          <img class="ph-icon" src="icon-mark.png" alt="">
+          <div class="ph-title">
+            <p>Laboratorio Autocontenido Hidropónico de Industria 4.0</p>
+            <h1>Reporte de monitoreo</h1>
+          </div>
+          <div class="ph-logos">
+            <img class="ph-utn" src="logo-utn.png" alt="UTN">
+            <img class="ph-giedi" src="logo-giedi.png" alt="GIEDI">
+            <img class="ph-gitda" src="logo_gitda.png" alt="GITDA">
+          </div>
+        </div>
+        <dl class="ph-meta">
+          <div><dt>Generado</dt><dd data-print="date"></dd></div>
+          <div><dt>Período</dt><dd data-print="range"></dd></div>
+        </dl>
+      </header>
+</template>
+<template id="tpl-print-footer">
+      <footer class="print-footer">
+        <div class="ph-logos">
+          <img class="ph-utn" src="logo-utn.png" alt="UTN">
+          <img class="ph-giedi" src="logo-giedi.png" alt="GIEDI">
+          <img class="ph-gitda" src="logo_gitda.png" alt="GITDA">
+        </div>
+        <p><strong>Universidad Tecnológica Nacional</strong>Facultad Regional Santa Fe</p>
+        <span>LAHI 4.0</span>
+      </footer>
+</template>
+
+<!-- ══ PERSONALIZACIÓN ══ -->
+<div class="drawer-layer">
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Personalizar dashboard" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Personalizar</h2>
+    <button class="tool-btn" id="drawer-close" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <p class="help">Elegí qué lecturas y gráficas ver. Para cambiar el orden, arrastrá una tarjeta desde su asa sobre otra y se intercambian. Tu diseño queda guardado en este navegador.</p>
+    <div class="drawer-group">
+      <h3>Lecturas actuales <span id="count-overview"></span></h3>
+      <div id="toggles-overview"></div>
+    </div>
+    <div class="drawer-group">
+      <h3>Gráficas <span id="count-charts"></span></h3>
+      <div id="toggles-charts"></div>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn" id="layout-reset">Restablecer diseño</button>
+  </div>
+</aside>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="app.js"></script>
 <script src="dashboard.js"></script>
 </body>
