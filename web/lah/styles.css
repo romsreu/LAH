@@ -83,7 +83,19 @@
   animation: none;
   mix-blend-mode: normal;
 }
-::view-transition-new(root) { z-index: 2; }
+::view-transition-new(root) {
+  z-index: 2;
+  /* arranca recortado (círculo de radio 0 en el botón); app.js lo agranda */
+  clip-path: circle(0px at var(--vt-x, 100%) var(--vt-y, 0px));
+}
+/* durante el cambio de tema no corren las transiciones de color de la página
+   (se verían a destiempo dentro del círculo); el ícono sí sigue animando */
+html.vt-activa *, html.vt-activa *::before, html.vt-activa *::after {
+  transition: none !important;
+}
+html.vt-activa .theme-toggle svg {
+  transition: transform 0.55s var(--ease-spring), opacity 0.3s var(--ease-out) !important;
+}
 
 html, body {
   height: 100%;

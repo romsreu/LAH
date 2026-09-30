@@ -14,6 +14,8 @@
     document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
   }
 
+  var animando = false;
+
   document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('theme-toggle');
     if (!btn) return;
@@ -28,17 +30,31 @@
         return;
       }
 
+      if (animando) return;   // ignorar clicks mientras dura el efecto
+      animando = true;
+
       var r = btn.getBoundingClientRect();
       var x = r.left + r.width / 2;
       var y = r.top + r.height / 2;
       var radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      // El tema nuevo arranca ya recortado a un círculo de radio 0 desde CSS
+      // (ver ::view-transition-new en styles.css): así no se ve un cuadro con
+      // todo el tema nuevo antes de que empiece la animación.
+      html.style.setProperty('--vt-x', x + 'px');
+      html.style.setProperty('--vt-y', y + 'px');
+      // mientras dura, se congelan las transiciones de color de la página
+      html.classList.add('vt-activa');
 
       var t = document.startViewTransition(function() { applyTheme(next); });
       t.ready.then(function() {
         html.animate(
           { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + radius + 'px at ' + x + 'px ' + y + 'px)'] },
-          { duration: 700, easing: 'cubic-bezier(0.65, 0, 0.25, 1)', pseudoElement: '::view-transition-new(root)' }
+          { duration: 650, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', fill: 'both', pseudoElement: '::view-transition-new(root)' }
         );
+      });
+      t.finished.finally(function() {
+        html.classList.remove('vt-activa');
+        animando = false;
       });
     });
   });

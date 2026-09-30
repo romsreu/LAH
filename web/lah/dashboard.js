@@ -558,17 +558,27 @@ function syncToggles() {
   }
 }
 
-function openDrawer() {
+// El foco solo se mueve si se usó el teclado (con el mouse no hace falta y
+// dejaba un anillo de foco a la vista). Un click con teclado tiene detail 0.
+function openDrawer(e) {
   document.body.classList.add('drawer-open');
-  document.getElementById('drawer').setAttribute('aria-hidden', 'false');
-  setTimeout(() => document.getElementById('drawer-close').focus(), 50);
+  const drawer = document.getElementById('drawer');
+  drawer.setAttribute('aria-hidden', 'false');
+  drawer.inert = false;
+  if (!e || e.detail === 0) {
+    setTimeout(() => document.getElementById('drawer-close').focus({ preventScroll: true }), 50);
+  }
 }
 
-function closeDrawer() {
+function closeDrawer(e) {
   if (!document.body.classList.contains('drawer-open')) return;
   document.body.classList.remove('drawer-open');
-  document.getElementById('drawer').setAttribute('aria-hidden', 'true');
-  document.getElementById('customize-btn').focus();
+  const drawer = document.getElementById('drawer');
+  drawer.setAttribute('aria-hidden', 'true');
+  drawer.inert = true;
+  const porTeclado = !e || e.type === 'keydown' || e.detail === 0;
+  if (porTeclado) document.getElementById('customize-btn').focus({ preventScroll: true });
+  else if (document.activeElement) document.activeElement.blur();
 }
 
 function resetLayout() {
@@ -804,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('drawer-close').addEventListener('click', closeDrawer);
   document.getElementById('scrim').addEventListener('click', closeDrawer);
   document.getElementById('layout-reset').addEventListener('click', resetLayout);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(e); });
   document.addEventListener('themechange', recolorCharts);
 
   const pdfBtn = document.getElementById('pdf-btn');
