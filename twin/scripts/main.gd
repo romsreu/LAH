@@ -1,11 +1,16 @@
 extends Node3D
 
 const LookTecnico = preload("res://scripts/look_tecnico.gd")
+const ModoPasos = preload("res://scripts/modo_pasos.gd")
 
 func _ready() -> void:
 	# Antes de unir las macetas en MultiMesh, así heredan el material nuevo
 	LookTecnico.aplicar(self)
 	_convert_pots_to_multimesh()
+	# etapas del ciclo que se muestran al tocarlas en la web
+	var pasos := ModoPasos.new()
+	add_child(pasos)
+	pasos.setup(self)
 
 # The 30 pots under PivotArmario/Armario/Pots are identical scene instances,
 # each costing its own draw call. This merges them into one (or a few, if the

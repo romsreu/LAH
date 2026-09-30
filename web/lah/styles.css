@@ -242,62 +242,6 @@ html, body {
   border: none; display: block;
 }
 
-/* help button */
-.viz-help {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 5;
-}
-.viz-help-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--moss);
-  color: #fff;
-  border: none;
-  font-family: var(--serif);
-  font-size: 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 20px -6px rgba(46,157,91,0.7);
-  transition: background 0.2s, transform 0.3s var(--ease-spring);
-  line-height: 1;
-}
-.viz-help-btn:hover { transform: scale(1.1); }
-.viz-help-btn.open  { transform: rotate(12deg) scale(1.05); }
-
-.viz-help-tooltip {
-  position: absolute;
-  bottom: calc(100% + 0.7rem);
-  right: 0;
-  width: 240px;
-  background: rgba(8,22,18,0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(168,213,181,0.2);
-  border-radius: 12px;
-  padding: 0.75rem 0.9rem;
-  font-family: var(--sans);
-  font-size: 0.74rem;
-  color: rgba(255,255,255,0.88);
-  line-height: 1.6;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(6px) scale(0.97);
-  transform-origin: bottom right;
-  transition: opacity 0.25s var(--ease-out), transform 0.35s var(--ease-spring);
-}
-.viz-help:hover .viz-help-tooltip,
-.viz-help-tooltip.show {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-
 /* ── SIDE PANEL ── */
 .side {
   grid-column: 2;

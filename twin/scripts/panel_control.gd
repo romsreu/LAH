@@ -43,6 +43,8 @@ const COLORES := {
 static var _mats := {}
 static var _s := 1.0      # +1 si el costado derecho es x = X_DER, -1 si es x = X_IZQ
 static var _xf := X_DER   # cara exterior del costado derecho
+# texto del display LCD (lo llena modo_pasos.gd en el paso de monitoreo)
+static var lcd: Label3D
 
 
 static func construir(gabinete: MeshInstance3D, armario: Node) -> void:
@@ -81,6 +83,25 @@ static func construir(gabinete: MeshInstance3D, armario: Node) -> void:
 	_caja(raiz, _p(cara + 0.002, yc - 0.025, zc + 0.085), Vector3(0.004, 0.105, 0.038), "lcd_marco")
 	var pantalla := _caja(raiz, _p(cara + 0.0045, yc - 0.025, zc + 0.085), Vector3(0.002, 0.090, 0.026), "lcd_marco", false)
 	pantalla.material_override = _emisivo(Color(0.16, 0.34, 0.85), 0.9)
+	lcd = Label3D.new()
+	lcd.name = "TextoLCD"
+	lcd.font_size = 32
+	lcd.outline_size = 0
+	lcd.pixel_size = 0.0052 / 32.0
+	lcd.line_spacing = -9.0
+	lcd.modulate = Color(0.88, 0.95, 1.0)
+	lcd.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	lcd.shaded = false
+	lcd.double_sided = false
+	var z_lcd := Vector3(_s, 0, 0)
+	var y_lcd := Vector3(0, 0, 1)
+	# con alineación a la izquierda, la posición es el borde izquierdo del texto
+	# anclado arriba: las filas quedan fijas aunque se escriban de a una
+	lcd.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	var borde_izq := _p(cara + 0.0062, yc - 0.025, zc + 0.085) - y_lcd.cross(z_lcd) * 0.041 + y_lcd * 0.0122
+	lcd.transform = Transform3D(Basis(y_lcd.cross(z_lcd), y_lcd, z_lcd), borde_izq)
+	lcd.visible = false
+	raiz.add_child(lcd)
 	# luz piloto naranja
 	var piloto := _cilindro_x(raiz, _p(cara + 0.008, yc - 0.075, zc - 0.07), 0.011, 0.016, "negro", false)
 	piloto.material_override = _emisivo(Color(1.0, 0.42, 0.04), 1.1)

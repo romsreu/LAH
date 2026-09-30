@@ -44,22 +44,6 @@
   });
 })();
 
-// ── Help tooltip toggle ──
-document.addEventListener('DOMContentLoaded', function() {
-  var helpBtn = document.getElementById('viz-help-btn');
-  var helpTip = document.getElementById('viz-help-tooltip');
-  if (!helpBtn || !helpTip) return;
-  helpBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    var open = helpTip.classList.toggle('show');
-    helpBtn.classList.toggle('open', open);
-  });
-  document.addEventListener('click', function() {
-    helpTip.classList.remove('show');
-    helpBtn.classList.remove('open');
-  });
-});
-
 // ── Shared active state ──
 var activeEl = null;
 
