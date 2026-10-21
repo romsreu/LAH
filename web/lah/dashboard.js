@@ -1,7 +1,7 @@
 // ── InfluxDB config ───────────────────────────────────────────────────────
 const INFLUX = {
   url:    'https://us-east-1-1.aws.cloud2.influxdata.com',
-  token:  '',
+  token:  'tOGrBylRzvIpJusZAP0u59euGlgVFaboyqETURYtphYlH3p1-BFpPPcCq9m-gjTWnPfq3KSGelaF35AYgl2myw==',
   org:    'romsreu',
 };
 
